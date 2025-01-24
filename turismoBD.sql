@@ -9,7 +9,7 @@ CREATE TABLE Pessoa (
 CREATE TABLE Hotel 
 ( 
  CNPJ INT PRIMARY KEY,  
- tipo varchar(255),  
+ tipo varchar(100),
  nome varchar(100),  
  endereço varchar(100)
 ); 
@@ -17,8 +17,9 @@ CREATE TABLE Hotel
 CREATE TABLE pontoTuristico 
 ( 
  Nome VARCHAR(100) PRIMARY KEY,  
- preço INT,  
- FOREIGN KEY(NomeDestino) REFERENCES Destino (nome)
+ preço INT, 
+ nomeDestino varchar(100),
+ FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
 ); 
 
 CREATE TABLE Destino 
@@ -32,47 +33,58 @@ CREATE TABLE Transporte
  Preço INT,  
  DataPartida varchar(100) PRIMARY KEY,  
  placa varchar(100) PRIMARY KEY,  
- hora varchar(100),  
- FOREIGN KEY(NomeDestino) REFERENCES Destino (nome)
+ hora varchar(100),
+ nomeDestino varchar(100),
+ FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
 ); 
 
 CREATE TABLE Cliente 
 ( 
  desconto INT,
- NomeDeUsuario INT PRIMARY KEY,  
+ NomeDeUsuario INT PRIMARY KEY,
+ CPF INT,
  FOREIGN KEY (CPF) REFERENCES Pessoa (CPF)
 ); 
 
 CREATE TABLE Guia 
 ( 
  Preço INT,  
- ID INT PRIMARY KEY,  
+ ID INT PRIMARY KEY,
+ CPF INT,
  FOREIGN KEY(CPF) REFERENCES Pessoa (CPF),
+ nomeDestino varchar(100),
  FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
 ); 
 
-CREATE TABLE quarto 
-( 
- número INT PRIMARY KEY,  
- preço INT,  
- capacidade INT,  
- FOREIGN KEY(CNJPHotel) REFERENCES Hotel (CNPJ)
-); 
+CREATE TABLE Quarto (
+    numero INT,
+    CNPJHotel INT,
+    preco DECIMAL(10, 2),
+    capacidade INT,
+    PRIMARY KEY (numero, CNPJHotel),
+    CNPJHotel INT,
+    FOREIGN KEY (CNPJHotel) REFERENCES Hotel(CNPJ)
+);
 
 CREATE TABLE Plano
 ( 
  DataDePartida varchar(100),  
  DataDeRetorno varchar(100),  
  ID INT PRIMARY KEY,  
+ NomeDeUsuario varchar(100),
  FOREIGN KEY(NomedeUsuario) REFERENCES Cliente (NomeDeUsuario),
+ PlacaTransporte varchar(100),
  FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (Placa),
+ nomeDestino varchar(100),
  FOREIGN KEY(nomeDestino) REFERENCES Destino (nome),
+ CNPJHotel INT,
  FOREIGN KEY(CNPJHotel) REFERENCES Hotel (CNPJ)
 ); 
 
 CREATE TABLE onibus 
 ( 
  ID INT PRIMARY KEY,
+ PlacaTransporte varchar(100),
  FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
 ); 
 
@@ -80,6 +92,7 @@ CREATE TABLE Aviao
 ( 
  portao INT,  
  ID INT PRIMARY KEY,
+  PlacaTransporte varchar(100),
  FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
 ); 
 
@@ -88,5 +101,6 @@ CREATE TABLE localDePartida
  idonibus INT,  
  Terminal INT PRIMARY KEY,  
  Plataforma INT PRIMARY KEY,
+ idonibus INT,
  FOREIGN KEY(idonibus) REFERENCES onibus (ID)
 ); 
