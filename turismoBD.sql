@@ -18,7 +18,7 @@ CREATE TABLE pontoTuristico
 ( 
  Nome VARCHAR(100) PRIMARY KEY,  
  preço INT,  
- NomeDestino varchar(100)
+ FOREIGN KEY(NomeDestino) REFERENCES Destino (nome)
 ); 
 
 CREATE TABLE Destino 
@@ -30,25 +30,25 @@ CREATE TABLE Destino
 CREATE TABLE Transporte 
 ( 
  Preço INT,  
- Data INT PRIMARY KEY,  
- placa INT PRIMARY KEY,  
- hora INT,  
- NomeDestino INT,  
+ DataPartida varchar(100) PRIMARY KEY,  
+ placa varchar(100) PRIMARY KEY,  
+ hora varchar(100),  
+ FOREIGN KEY(NomeDestino) REFERENCES Destino (nome)
 ); 
 
 CREATE TABLE Cliente 
 ( 
- desconto INT,  
- Nome de usuário INT PRIMARY KEY,  
- CPF INT,  
+ desconto INT,
+ NomeDeUsuario INT PRIMARY KEY,  
+ FOREIGN KEY (CPF) REFERENCES Pessoa (CPF)
 ); 
 
 CREATE TABLE Guia 
 ( 
  Preço INT,  
- CPF INT,  
  ID INT PRIMARY KEY,  
- nomeDestino INT,  
+ FOREIGN KEY(CPF) REFERENCES Pessoa (CPF),
+ FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
 ); 
 
 CREATE TABLE quarto 
@@ -56,50 +56,37 @@ CREATE TABLE quarto
  número INT PRIMARY KEY,  
  preço INT,  
  capacidade INT,  
- CNJPHotel INT,  
+ FOREIGN KEY(CNJPHotel) REFERENCES Hotel (CNPJ)
 ); 
 
-CREATE TABLE Plano 
+CREATE TABLE Plano
 ( 
- Data de partida INT,  
- Data de retorno INT,  
+ DataDePartida varchar(100),  
+ DataDeRetorno varchar(100),  
  ID INT PRIMARY KEY,  
- NomedeUsuarioCliente INT,  
- PlacaTransporte INT,  
- nomeDestino INT,  
- CNPJHotel INT,  
+ FOREIGN KEY(NomedeUsuario) REFERENCES Cliente (NomeDeUsuario),
+ FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (Placa),
+ FOREIGN KEY(nomeDestino) REFERENCES Destino (nome),
+ FOREIGN KEY(CNPJHotel) REFERENCES Hotel (CNPJ)
 ); 
 
-CREATE TABLE ônibus 
+CREATE TABLE onibus 
 ( 
- PlacaTransporte INT PRIMARY KEY,  
- ID INT PRIMARY KEY,  
+ ID INT PRIMARY KEY,
+ FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
 ); 
 
-CREATE TABLE Avião 
+CREATE TABLE Aviao 
 ( 
- portão INT,  
- PlacaTransporte INT,  
- ID INT PRIMARY KEY,  
+ portao INT,  
+ ID INT PRIMARY KEY,
+ FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
 ); 
 
-CREATE TABLE local de partida 
+CREATE TABLE localDePartida 
 ( 
- idônibus INT,  
+ idonibus INT,  
  Terminal INT PRIMARY KEY,  
- Plataforma INT PRIMARY KEY,  
+ Plataforma INT PRIMARY KEY,
+ FOREIGN KEY(idonibus) REFERENCES onibus (ID)
 ); 
-
-ALTER TABLE ponto turístico ADD FOREIGN KEY(NomeDestino) REFERENCES Pessoa (NomeDestino)
-ALTER TABLE Transporte ADD FOREIGN KEY(NomeDestino) REFERENCES Pessoa (NomeDestino)
-ALTER TABLE Cliente ADD FOREIGN KEY(CPF) REFERENCES Pessoa (CPF)
-ALTER TABLE Guia ADD FOREIGN KEY(CPF) REFERENCES Pessoa (CPF)
-ALTER TABLE Guia ADD FOREIGN KEY(nomeDestino) REFERENCES Pessoa (nomeDestino)
-ALTER TABLE quarto ADD FOREIGN KEY(CNJPHotel) REFERENCES Pessoa (CNJPHotel)
-ALTER TABLE Plano ADD FOREIGN KEY(NomedeUsuarioCliente) REFERENCES Pessoa (NomedeUsuarioCliente)
-ALTER TABLE Plano ADD FOREIGN KEY(PlacaTransporte) REFERENCES Pessoa (PlacaTransporte)
-ALTER TABLE Plano ADD FOREIGN KEY(nomeDestino) REFERENCES Pessoa (nomeDestino)
-ALTER TABLE Plano ADD FOREIGN KEY(CNPJHotel) REFERENCES Pessoa (CNPJHotel)
-ALTER TABLE ônibus ADD FOREIGN KEY(PlacaTransporte) REFERENCES Pessoa (PlacaTransporte)
-ALTER TABLE Avião ADD FOREIGN KEY(PlacaTransporte) REFERENCES Pessoa (PlacaTransporte)
-ALTER TABLE local de partida ADD FOREIGN KEY(idônibus) REFERENCES ônibus (idônibus)
