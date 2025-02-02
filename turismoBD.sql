@@ -1,4 +1,5 @@
 show databases;
+CREATE DATABASE turismo;
 use turismo;
 
 CREATE TABLE Pessoa (
@@ -53,7 +54,7 @@ CREATE TABLE Cliente
 CREATE TABLE Guia 
 ( 
  Preço INT,  
- ID INT PRIMARY KEY,
+ ID INT AUTO_INCREMENT PRIMARY KEY,
  CPF INT,
  FOREIGN KEY(CPF) REFERENCES Pessoa (CPF),
  nomeDestino varchar(100),
@@ -71,7 +72,7 @@ CREATE TABLE Quarto (
 
 CREATE TABLE onibus 
 ( 
- ID INT PRIMARY KEY,
+ ID INT AUTO_INCREMENT PRIMARY KEY,
  PlacaTransporte varchar(100),
  FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
 ); 
@@ -79,7 +80,7 @@ CREATE TABLE onibus
 CREATE TABLE Aviao 
 ( 
  portao INT,  
- ID INT PRIMARY KEY,
+ ID INT AUTO_INCREMENT PRIMARY KEY,
   PlacaTransporte varchar(100),
  FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
 ); 
@@ -89,7 +90,7 @@ CREATE TABLE localDePartida
  Terminal INT,  
  Plataforma INT,
  Primary KEY(Terminal,Plataforma),
- idonibus INT,
+ idonibus INT AUTO_INCREMENT,
  FOREIGN KEY(idonibus) REFERENCES onibus (ID)
 ); 
 
@@ -97,7 +98,7 @@ CREATE TABLE Plano
 ( 
  DataDePartida varchar(100),  
  DataDeRetorno varchar(100),  
- ID INT PRIMARY KEY,  
+ ID INT AUTO_INCREMENT PRIMARY KEY,  
  NomeDeUsuario varchar(100),
  FOREIGN KEY(NomedeUsuario) REFERENCES Cliente (NomeDeUsuario),
  PlacaTransporte varchar(100),
