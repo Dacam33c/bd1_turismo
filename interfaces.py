@@ -7,7 +7,7 @@ def cadastrar_pessoa():
               [sg.Text("Data de nascimento", size=(15,1)), sg.InputText(key='nascimento', size=(20,1))],
               [sg.Text("Endereço", size=(15,1)), sg.InputText(key='endereço', size=(20,1))],
               [sg.Text("Telefone", size=(15,1)), sg.InputText(key='telefone', size=(20,1))],
-              [sg.Radio("Guia", "guia", default=True, size=(10,1)), sg.Radio("Cliente", "cliente", default=False, size=(10,1))],
+              [sg.Radio("Guia", "tipo_usuario", default=True, size=(10,1)), sg.Radio("Cliente", "tipo_usuario", default=False, size=(10,1))],
               [sg.Button("Salvar"), sg.Button("Voltar")]]
     
     window = sg.Window("Cadastrar Pessoa", layout)
@@ -23,7 +23,10 @@ def cadastrar_pessoa():
 
 def cadastrar_hotel():
     layout = [[sg.Text("Cadastro de Hotel")],
-              [sg.InputText(key='hotel', size=(20,1))],
+              [sg.Text("Nome", size=(10,1)), sg.InputText(key='nome', size=(20,1))],
+              [sg.Text("CNPJ", size=(10,1)), sg.InputText(key='cnpj', size=(20,1))],
+              [sg.Text("Tipo", size=(10,1)), sg.InputText(key='tipo', size=(20,1))],
+              [sg.Text("Endereço", size=(10,1)), sg.InputText(key='endereço', size=(20,1))],
               [sg.Button("Salvar"), sg.Button("Voltar")]]
     
     window = sg.Window("Cadastrar Hotel", layout)
