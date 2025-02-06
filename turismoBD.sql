@@ -16,6 +16,11 @@ DROP TABLE IF EXISTS Aviao;
 DROP TABLE IF EXISTS localDePartida;
 DROP TABLE IF EXISTS Plano;
 DROP TABLE IF EXISTS Localizacao;
+DROP VIEW IF EXISTS Clientes_Transporte;
+DROP VIEW IF EXISTS Clientes_Hoteis;
+DROP VIEW IF EXISTS Planos_PontosTuristicos;
+
+
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -217,9 +222,45 @@ CREATE TABLE Plano
  FOREIGN KEY(CNPJHotel) REFERENCES Hotel (CNPJ)
 );
 
-INSERT INTO Plano (DataDePartida, DataDeRetorno, CPFcliente, PlacaTransporte, nomeDestino, CNPJHotel) VALUES
-('2024-03-10', '2024-03-15', '12345678901', 'ABC1A23', 'Fernando de Noronha', '12345678000101'),
-('2024-02-18', '2024-02-23', '23456789012', 'XYZ9B87', 'Gramado', '23456789000102'),
-('2024-05-01', '2024-05-07', '34567890123', 'LMN3C56', 'Ouro Preto', '34567890000103'),
-('2024-04-05', '2024-04-12', '45678901234', 'QWE5D67', 'São Paulo', '45678901000104'),
-('2024-06-10', '2024-06-14', '56789012345', 'RTY7E89', 'Ilha Bela', '56789012000105');
+
+INSERT INTO Plano (DataDePartida, DataDeRetorno, NomeDeUsuario, PlacaTransporte, nomeDestino, CNPJHotel) VALUES
+('2024-03-10', '2024-03-15', 'joaosilva', 'ABC1A23', 'Fernando de Noronha', '12345678000101'),
+('2024-02-18', '2024-02-23', 'mariasantos', 'XYZ9B87', 'Gramado', '23456789000102'),
+('2024-05-01', '2024-05-07', 'pedrosouza', 'LMN3C56', 'Ouro Preto', '34567890000103'),
+('2024-04-05', '2024-04-12', 'anacarvalho', 'QWE5D67', 'São Paulo', '45678901000104'),
+('2024-06-10', '2024-06-14', 'lucasferreira', 'RTY7E89', 'Ilha Bela', '56789012000105');
+
+-- VIEWS
+CREATE VIEW Clientes_Transporte AS
+SELECT 
+    Cliente.NomeDeUsuario,
+    Cliente.CPF,
+    Transporte.Placa AS PlacaTransporte,
+    Transporte.DataPartida,
+    Transporte.NomeDestino
+FROM Cliente
+JOIN Plano ON Cliente.NomeDeUsuario = Plano.NomeDeUsuario
+JOIN Transporte ON Plano.PlacaTransporte = Transporte.Placa;
+
+CREATE VIEW Clientes_Hoteis AS
+SELECT 
+    Cliente.NomeDeUsuario,
+    Cliente.CPF,
+    Hotel.nome AS NomeHotel,
+    Hotel.endereço AS EnderecoHotel
+FROM Cliente
+JOIN Plano ON Cliente.NomeDeUsuario = Plano.NomeDeUsuario
+JOIN Hotel ON Plano.CNPJHotel = Hotel.CNPJ;
+
+CREATE VIEW Planos_PontosTuristicos AS
+SELECT 
+    Plano.ID AS ID_Plano,
+    Plano.NomeDeUsuario,
+    Plano.DataDePartida,
+    Plano.DataDeRetorno,
+    Plano.nomeDestino AS Destino,
+    pontoTuristico.Nome AS NomePontoTuristico,
+    pontoTuristico.preço AS PrecoPontoTuristico
+FROM Plano
+JOIN pontoTuristico ON Plano.nomeDestino = pontoTuristico.nomeDestino;
+
