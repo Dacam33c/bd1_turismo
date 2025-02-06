@@ -15,6 +15,10 @@ DROP TABLE IF EXISTS onibus;
 DROP TABLE IF EXISTS Aviao;
 DROP TABLE IF EXISTS localDePartida;
 DROP TABLE IF EXISTS Plano;
+DROP VIEW IF EXISTS Clientes_Transporte;
+DROP VIEW IF EXISTS Clientes_Hoteis;
+DROP VIEW IF EXISTS Planos_PontosTuristicos;
+
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -207,3 +211,37 @@ INSERT INTO Plano (DataDePartida, DataDeRetorno, NomeDeUsuario, PlacaTransporte,
 ('2024-05-01', '2024-05-07', 'pedrosouza', 'LMN3C56', 'Ouro Preto', '34567890000103'),
 ('2024-04-05', '2024-04-12', 'anacarvalho', 'QWE5D67', 'São Paulo', '45678901000104'),
 ('2024-06-10', '2024-06-14', 'lucasferreira', 'RTY7E89', 'Ilha Bela', '56789012000105');
+
+-- VIEWS
+CREATE VIEW Clientes_Transporte AS
+SELECT 
+    Cliente.NomeDeUsuario,
+    Cliente.CPF,
+    Transporte.Placa AS PlacaTransporte,
+    Transporte.DataPartida,
+    Transporte.NomeDestino
+FROM Cliente
+JOIN Plano ON Cliente.NomeDeUsuario = Plano.NomeDeUsuario
+JOIN Transporte ON Plano.PlacaTransporte = Transporte.Placa;
+
+CREATE VIEW Clientes_Hoteis AS
+SELECT 
+    Cliente.NomeDeUsuario,
+    Cliente.CPF,
+    Hotel.nome AS NomeHotel,
+    Hotel.endereço AS EnderecoHotel
+FROM Cliente
+JOIN Plano ON Cliente.NomeDeUsuario = Plano.NomeDeUsuario
+JOIN Hotel ON Plano.CNPJHotel = Hotel.CNPJ;
+
+CREATE VIEW Planos_PontosTuristicos AS
+SELECT 
+    Plano.ID AS ID_Plano,
+    Plano.NomeDeUsuario,
+    Plano.DataDePartida,
+    Plano.DataDeRetorno,
+    Plano.nomeDestino AS Destino,
+    pontoTuristico.Nome AS NomePontoTuristico,
+    pontoTuristico.preço AS PrecoPontoTuristico
+FROM Plano
+JOIN pontoTuristico ON Plano.nomeDestino = pontoTuristico.nomeDestino;
