@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS onibus;
 DROP TABLE IF EXISTS Aviao;
 DROP TABLE IF EXISTS localDePartida;
 DROP TABLE IF EXISTS Plano;
+DROP TABLE IF EXISTS Localizacao;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -32,14 +33,26 @@ INSERT INTO Pessoa (CPF, Nome, endereco, dataDeNascimento, telefone) VALUES
 ('45678901234', 'Fernanda Lima Souza', 'Alameda das Rosas, 321, Belo Horizonte - MG', '1988-07-30', '(31) 92345-6789'),
 ('56789012345', 'Thiago Mendes Rocha', 'Praça da Liberdade, 987, Porto Alegre - RS', '1995-11-05', '(51) 93456-7890');
 
-CREATE TABLE Hotel 
-( 
- CNPJ varchar(14) PRIMARY KEY,  
- tipo varchar(100),
- nome varchar(100),  
- endereço varchar(100)
-); 
-INSERT INTO Hotel (CNPJ, tipo, nome, endereço) VALUES
+CREATE TABLE Localizacao (
+    endereco VARCHAR(100) PRIMARY KEY,
+    nomeDestino VARCHAR(100),
+    FOREIGN KEY (nomeDestino) REFERENCES Destino(nome)
+);
+INSERT INTO Localizacao (endereco, nomeDestino) VALUES
+('Avenida Paulista, 123, São Paulo - SP', 'São Paulo'),
+('Rodovia BR-101, Km 200, Florianópolis - SC', 'Florianópolis'),
+('Rua das Palmeiras, 456, Porto Seguro - BA', 'Porto Seguro'),
+('Rua XV de Novembro, 789, Curitiba - PR', 'Curitiba'),
+('Rua Augusta, 321, São Paulo - SP', 'São Paulo');
+
+CREATE TABLE Hotel (
+    CNPJ VARCHAR(14) PRIMARY KEY,
+    tipo VARCHAR(100),
+    nome VARCHAR(100),
+    endereco VARCHAR(100),
+    FOREIGN KEY (endereco) REFERENCES Localizacao(endereco)
+);
+INSERT INTO Hotel (CNPJ, tipo, nome, endereco) VALUES
 ('12345678000101', 'Hotel 5 Estrelas', 'Grand Palace Hotel', 'Avenida Paulista, 123, São Paulo - SP'),
 ('23456789000102', 'Resort', 'Paraíso das Águas Resort', 'Rodovia BR-101, Km 200, Florianópolis - SC'),
 ('34567890000103', 'Pousada', 'Pousada Recanto do Sol', 'Rua das Palmeiras, 456, Porto Seguro - BA'),
@@ -49,24 +62,27 @@ INSERT INTO Hotel (CNPJ, tipo, nome, endereço) VALUES
 
 CREATE TABLE Destino 
 ( 
- tipo varchar(100),  
- nome varchar(100) PRIMARY KEY
+    tipo varchar(100),  
+    nome varchar(100) PRIMARY KEY
 );
 INSERT INTO Destino (tipo, nome) VALUES
 ('Praia', 'Fernando de Noronha'),
 ('Montanha', 'Gramado'),
 ('Histórico', 'Ouro Preto'),
 ('Urbano', 'São Paulo'),
-('Ilha', 'Ilha Bela');
+('Ilha', 'Ilha Bela'),
+('Praia', 'Florianópolis'),
+('Praia','Porto Seguro'),
+('Urbano','Curitiba');
 
 
 CREATE TABLE pontoTuristico 
 ( 
- Nome VARCHAR(100) PRIMARY KEY,  
- preço INT, 
- nomeDestino varchar(100),
- foto LONGBLOB,
- FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
+    Nome VARCHAR(100) PRIMARY KEY,  
+    preço INT, 
+    nomeDestino varchar(100),
+    foto LONGBLOB,
+    FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
 );
 INSERT INTO pontoTuristico (Nome, preço, nomeDestino, foto) VALUES
 ('Praia do Sancho', 0, 'Fernando de Noronha', NULL),
@@ -77,13 +93,13 @@ INSERT INTO pontoTuristico (Nome, preço, nomeDestino, foto) VALUES
 
 CREATE TABLE Transporte 
 ( 
- Preço INT,  
- DataPartida varchar(100),  
- placa varchar(100),
- Primary key (placa,DataPartida),
- hora varchar(100),
- nomeDestino varchar(100),
- FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
+    Preço INT,  
+    DataPartida varchar(100),  
+    placa varchar(100),
+    Primary key (placa,DataPartida),
+    hora varchar(100),
+    nomeDestino varchar(100),
+    FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
 ); 
 INSERT INTO Transporte (Preço, DataPartida, placa, hora, nomeDestino) VALUES
 (150, '2024-02-10', 'ABC1A23', '08:00', 'Fernando de Noronha'),
@@ -93,13 +109,13 @@ INSERT INTO Transporte (Preço, DataPartida, placa, hora, nomeDestino) VALUES
 (90, '2024-03-01', 'RTY7E89', '09:15', 'Ilha Bela');
 
 
-CREATE TABLE Cliente 
-( 
- desconto INT,
- NomeDeUsuario varchar(100) PRIMARY KEY,
- CPF varchar(11),
- FOREIGN KEY (CPF) REFERENCES Pessoa (CPF)
+CREATE TABLE Cliente (
+    CPF VARCHAR(11) PRIMARY KEY,
+    NomeDeUsuario VARCHAR(100),
+    desconto INT,
+    FOREIGN KEY (CPF) REFERENCES Pessoa(CPF)
 );
+
 INSERT INTO Cliente (desconto, NomeDeUsuario, CPF) VALUES
 (10, 'joaosilva', '12345678901'),
 (15, 'mariasantos', '23456789012'),
@@ -110,12 +126,12 @@ INSERT INTO Cliente (desconto, NomeDeUsuario, CPF) VALUES
 
 CREATE TABLE Guia 
 ( 
- Preço INT,  
- ID INT AUTO_INCREMENT PRIMARY KEY,
- CPF varchar(11),
- FOREIGN KEY(CPF) REFERENCES Pessoa (CPF),
- nomeDestino varchar(100),
- FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
+    Preço INT,  
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    CPF varchar(11),
+    FOREIGN KEY(CPF) REFERENCES Pessoa (CPF),
+    nomeDestino varchar(100),
+    FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
 );
 INSERT INTO Guia (Preço, CPF, nomeDestino) VALUES
 (200, '12345678901', 'Fernando de Noronha'),
@@ -157,10 +173,10 @@ INSERT INTO onibus (PlacaTransporte) VALUES
 
 CREATE TABLE Aviao 
 ( 
- portao INT,  
- ID INT AUTO_INCREMENT PRIMARY KEY,
-  PlacaTransporte varchar(100),
- FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
+    portao INT,  
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    PlacaTransporte varchar(100),
+    FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
 );
 INSERT INTO Aviao (portao, PlacaTransporte) VALUES
 (1, 'ABC1A23'),
@@ -191,8 +207,8 @@ CREATE TABLE Plano
  DataDePartida varchar(100),  
  DataDeRetorno varchar(100),  
  ID INT AUTO_INCREMENT PRIMARY KEY,  
- NomeDeUsuario varchar(100),
- FOREIGN KEY(NomedeUsuario) REFERENCES Cliente (NomeDeUsuario),
+ CPFcliente varchar(11),
+ FOREIGN KEY(CPFcliente) REFERENCES Cliente (CPF),
  PlacaTransporte varchar(100),
  FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (Placa),
  nomeDestino varchar(100),
@@ -201,9 +217,9 @@ CREATE TABLE Plano
  FOREIGN KEY(CNPJHotel) REFERENCES Hotel (CNPJ)
 );
 
-INSERT INTO Plano (DataDePartida, DataDeRetorno, NomeDeUsuario, PlacaTransporte, nomeDestino, CNPJHotel) VALUES
-('2024-03-10', '2024-03-15', 'joaosilva', 'ABC1A23', 'Fernando de Noronha', '12345678000101'),
-('2024-02-18', '2024-02-23', 'mariasantos', 'XYZ9B87', 'Gramado', '23456789000102'),
-('2024-05-01', '2024-05-07', 'pedrosouza', 'LMN3C56', 'Ouro Preto', '34567890000103'),
-('2024-04-05', '2024-04-12', 'anacarvalho', 'QWE5D67', 'São Paulo', '45678901000104'),
-('2024-06-10', '2024-06-14', 'lucasferreira', 'RTY7E89', 'Ilha Bela', '56789012000105');
+INSERT INTO Plano (DataDePartida, DataDeRetorno, CPFcliente, PlacaTransporte, nomeDestino, CNPJHotel) VALUES
+('2024-03-10', '2024-03-15', '12345678901', 'ABC1A23', 'Fernando de Noronha', '12345678000101'),
+('2024-02-18', '2024-02-23', '23456789012', 'XYZ9B87', 'Gramado', '23456789000102'),
+('2024-05-01', '2024-05-07', '34567890123', 'LMN3C56', 'Ouro Preto', '34567890000103'),
+('2024-04-05', '2024-04-12', '45678901234', 'QWE5D67', 'São Paulo', '45678901000104'),
+('2024-06-10', '2024-06-14', '56789012345', 'RTY7E89', 'Ilha Bela', '56789012000105');
