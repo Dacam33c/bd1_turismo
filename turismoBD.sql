@@ -13,13 +13,13 @@ DROP TABLE IF EXISTS Guia;
 DROP TABLE IF EXISTS Quarto;
 DROP TABLE IF EXISTS onibus;
 DROP TABLE IF EXISTS Aviao;
-DROP TABLE IF EXISTS localDePartida;
 DROP TABLE IF EXISTS Plano;
 DROP TABLE IF EXISTS Localizacao;
 DROP VIEW IF EXISTS Clientes_Transporte;
 DROP VIEW IF EXISTS Clientes_Hoteis;
 DROP VIEW IF EXISTS Planos_PontosTuristicos;
-
+DROP TABLE IF EXISTS pontoFoto;
+DROP TABLE IF EXISTS Viagens;
 
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -86,32 +86,47 @@ CREATE TABLE pontoTuristico
     Nome VARCHAR(100) PRIMARY KEY,  
     preço INT, 
     nomeDestino varchar(100),
-    foto LONGBLOB,
     FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
 );
-INSERT INTO pontoTuristico (Nome, preço, nomeDestino, foto) VALUES
-('Praia do Sancho', 0, 'Fernando de Noronha', NULL),
-('Lago Negro', 10, 'Gramado', NULL),
-('Museu da Inconfidência', 20, 'Ouro Preto', NULL),
-('Avenida Paulista', 0, 'São Paulo', NULL),
-('Praia do Curral', 0, 'Ilha Bela', NULL);
+INSERT INTO pontoTuristico (Nome, preço, nomeDestino) VALUES
+('Praia do Sancho', 0, 'Fernando de Noronha'),
+('Lago Negro', 10, 'Gramado'),
+('Museu da Inconfidência', 20, 'Ouro Preto'),
+('Avenida Paulista', 0, 'São Paulo'),
+('Praia do Curral', 0, 'Ilha Bela');
 
-CREATE TABLE Transporte 
+create table pontoFoto
+(
+	Nome varchar(100) Primary key,
+    foreign key (nome) references pontoTuristico (nome),
+    foto LONGBLOB
+);
+Insert into pontoFoto (nome,foto) Values
+('Praia do Sancho',NULL),
+('Lago Negro',NULL),
+('Museu da Inconfidência',NULL),
+('Avenida Paulista', NULL),
+('Praia do Curral', NULL);
+
+CREATE TABLE Viagens 
 ( 
-    Preço INT,  
-    DataPartida varchar(100),  
+	ID INT AUTO_INCREMENT PRIMARY KEY,
     placa varchar(100),
-    Primary key (placa,DataPartida),
+    foreign key (placa) references transporte (placaTransporte),
+    DataPartida varchar(100), 
     hora varchar(100),
     nomeDestino varchar(100),
-    FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
-); 
-INSERT INTO Transporte (Preço, DataPartida, placa, hora, nomeDestino) VALUES
-(150, '2024-02-10', 'ABC1A23', '08:00', 'Fernando de Noronha'),
-(200, '2024-02-15', 'XYZ9B87', '14:30', 'Gramado'),
-(120, '2024-02-20', 'LMN3C56', '07:45', 'Ouro Preto'),
-(180, '2024-02-25', 'QWE5D67', '16:00', 'São Paulo'),
-(90, '2024-03-01', 'RTY7E89', '09:15', 'Ilha Bela');
+    Preço INT,
+    FOREIGN KEY(nomeDestino) REFERENCES Destino (nome),
+    assentosOcupados int(10)
+);
+
+INSERT INTO Viagens (Preço, DataPartida, placa, hora, nomeDestino,assentosOcupados) VALUES
+(150, '2024-02-10', 'ABC1A23', '08:00', 'Fernando de Noronha','3'),
+(200, '2024-02-15', 'XYZ9B87', '14:30', 'Gramado','5'),
+(120, '2024-02-20', 'LMN3C56', '07:45', 'Ouro Preto','2'),
+(180, '2024-02-25', 'QWE5D67', '16:00', 'São Paulo','1'),
+(90, '2024-03-01', 'RTY7E89', '09:15', 'Ilha Bela','5');
 
 
 CREATE TABLE Cliente (
@@ -131,81 +146,50 @@ INSERT INTO Cliente (desconto, NomeDeUsuario, CPF) VALUES
 
 CREATE TABLE Guia 
 ( 
-    Preço INT,  
     ID INT AUTO_INCREMENT PRIMARY KEY,
     CPF varchar(11),
     FOREIGN KEY(CPF) REFERENCES Pessoa (CPF),
     nomeDestino varchar(100),
-    FOREIGN KEY(nomeDestino) REFERENCES Destino (nome)
+    FOREIGN KEY(nomeDestino) REFERENCES Destino (nome),
+    Preço INT
 );
-INSERT INTO Guia (Preço, CPF, nomeDestino) VALUES
-(200, '12345678901', 'Fernando de Noronha'),
-(150, '23456789012', 'Gramado'),
-(180, '34567890123', 'Ouro Preto'),
-(120, '45678901234', 'São Paulo'),
-(170, '56789012345', 'Ilha Bela');
+INSERT INTO Guia ( CPF, nomeDestino,Preço) VALUES
+( '12345678901', 'Fernando de Noronha', 200),
+('23456789012', 'Gramado',150),
+('34567890123', 'Ouro Preto',180),
+('45678901234', 'São Paulo',120),
+('56789012345', 'Ilha Bela',170);
 
 
 CREATE TABLE Quarto (
     numero INT,
-    preco DECIMAL(10, 2),
-    capacidade INT,
-    PRIMARY KEY (numero, CNPJHotel),
     CNPJHotel varchar(14),
-    FOREIGN KEY (CNPJHotel) REFERENCES Hotel(CNPJ)
+    PRIMARY KEY (numero, CNPJHotel),
+    FOREIGN KEY (CNPJHotel) REFERENCES Hotel(CNPJ),
+    preco DECIMAL(10, 2),
+    capacidade INT
+    
 );
-INSERT INTO Quarto (numero, preco, capacidade, CNPJHotel) VALUES
-(101, 250.00, 2, '12345678000101'),
-(202, 300.50, 4, '23456789000102'),
-(303, 180.75, 3, '34567890000103'),
-(404, 400.00, 2, '45678901000104'),
-(505, 150.25, 1, '56789012000105');
+INSERT INTO Quarto (CNPJHotel,numero, preco, capacidade) VALUES
+('12345678000101',101, 250.00, 2),
+('23456789000102',202, 300.50, 4),
+('34567890000103',303, 180.75, 3),
+('45678901000104',404, 400.00, 2),
+('56789012000105',505, 150.25, 1);
 
 
-CREATE TABLE onibus 
+CREATE TABLE transporte 
 ( 
- ID INT AUTO_INCREMENT PRIMARY KEY,
- PlacaTransporte varchar(100),
- FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
+ PlacaTransporte varchar(100) primary key,
+ capacidade int(10),
+ tipo varchar(100)
 );
-INSERT INTO onibus (PlacaTransporte) VALUES
-('ABC1A23'),
-('XYZ9B87'),
-('LMN3C56'),
-('QWE5D67'),
-('RTY7E89');
-
-
-CREATE TABLE Aviao 
-( 
-    portao INT,  
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    PlacaTransporte varchar(100),
-    FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (placa)
-);
-INSERT INTO Aviao (portao, PlacaTransporte) VALUES
-(1, 'ABC1A23'),
-(2, 'XYZ9B87'),
-(3, 'LMN3C56'),
-(4, 'QWE5D67'),
-(5, 'RTY7E89');
-
-
-CREATE TABLE localDePartida 
-( 
- Terminal INT,  
- Plataforma INT,
- Primary KEY(Terminal,Plataforma),
- idonibus INT AUTO_INCREMENT,
- FOREIGN KEY(idonibus) REFERENCES onibus (ID)
-);
-INSERT INTO localDePartida (Terminal, Plataforma, idonibus) VALUES
-(1, 5, 1),
-(2, 3, 2),
-(3, 7, 3),
-(4, 1, 4),
-(5, 9, 5);
-
+INSERT INTO transporte (PlacaTransporte,capacidade,tipo) VALUES
+('ABC1A23','10','onibus'),
+('XYZ9B87','30','onibus'),
+('LMN3C56','10','onibus'),
+('QWE5D67','40','aviao'),
+('RTY7E89','30','aviao');
 
 CREATE TABLE Plano
 ( 
@@ -215,7 +199,7 @@ CREATE TABLE Plano
  CPFcliente varchar(11),
  FOREIGN KEY(CPFcliente) REFERENCES Cliente (CPF),
  PlacaTransporte varchar(100),
- FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (Placa),
+ FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (PlacaTransporte),
  nomeDestino varchar(100),
  FOREIGN KEY(nomeDestino) REFERENCES Destino (nome),
  CNPJHotel varchar(14),
@@ -235,12 +219,11 @@ CREATE VIEW Clientes_Transporte AS
 SELECT 
     Cliente.NomeDeUsuario,
     Cliente.CPF,
-    Transporte.Placa AS PlacaTransporte,
-    Transporte.DataPartida,
-    Transporte.NomeDestino
+    Transporte.PlacaTransporte AS PlacaTransporte,
+    plano.nomeDestino
 FROM Cliente
 JOIN Plano ON Cliente.CPF = Plano.CPFcliente
-JOIN Transporte ON Plano.PlacaTransporte = Transporte.Placa;
+JOIN Transporte ON Plano.PlacaTransporte = Transporte.PlacaTransporte;
 
 CREATE VIEW Clientes_Hoteis AS
 SELECT 
