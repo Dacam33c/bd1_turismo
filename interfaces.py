@@ -1,4 +1,6 @@
 import PySimpleGUI as sg
+import mysql.connector
+from auxiliar import *
 
 # Menu Principal
 def menu():
@@ -82,6 +84,20 @@ def cadastrar_hotel():
         if event == sg.WIN_CLOSED or event == "Voltar":
             break
         elif event == "Salvar":
+            
+            conexao = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="309320",
+            database="turismo"
+            )
+
+            if conexao.is_connected():
+                print("Conectado ao MySQL")
+
+            hotel = {'Hotel' : [(values['cnpj'],values['tipo'],values['nome'],values['endereço'])]}
+            insertSql(hotel,conexao)
+            conexao.close()
             sg.popup(f"Hotel {values['nome']} cadastrado!")
 
     window.close()
