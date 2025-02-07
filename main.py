@@ -48,7 +48,7 @@ def insertSql(dicionario,conexao):
         conexao.commit()
         
         
-
+'''
 dicionarioValues = {
     "Pessoa" : [(1234, "endereçoteste", "Fulano", "2025-01-01", "6199999999")],
     "Destino": [('destino','nome')],
@@ -58,7 +58,7 @@ dicionarioValues = {
     }
 
 insertSql(dicionarioValues,conexao)
-   
+'''
         
 
 
