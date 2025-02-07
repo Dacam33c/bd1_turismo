@@ -86,4 +86,4 @@ def cadastrar_hotel():
 
     window.close()
 
-menu()
+#menu()

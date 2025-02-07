@@ -223,12 +223,12 @@ CREATE TABLE Plano
 );
 
 
-INSERT INTO Plano (DataDePartida, DataDeRetorno, NomeDeUsuario, PlacaTransporte, nomeDestino, CNPJHotel) VALUES
-('2024-03-10', '2024-03-15', 'joaosilva', 'ABC1A23', 'Fernando de Noronha', '12345678000101'),
-('2024-02-18', '2024-02-23', 'mariasantos', 'XYZ9B87', 'Gramado', '23456789000102'),
-('2024-05-01', '2024-05-07', 'pedrosouza', 'LMN3C56', 'Ouro Preto', '34567890000103'),
-('2024-04-05', '2024-04-12', 'anacarvalho', 'QWE5D67', 'São Paulo', '45678901000104'),
-('2024-06-10', '2024-06-14', 'lucasferreira', 'RTY7E89', 'Ilha Bela', '56789012000105');
+INSERT INTO Plano (DataDePartida, DataDeRetorno, PlacaTransporte, nomeDestino, CNPJHotel, CPFcliente) VALUES
+('2024-03-10', '2024-03-15',  'ABC1A23', 'Fernando de Noronha', '12345678000101', '12345678901'),
+('2024-02-18', '2024-02-23',  'XYZ9B87', 'Gramado', '23456789000102','23456789012'),
+('2024-05-01', '2024-05-07',  'LMN3C56', 'Ouro Preto', '34567890000103','34567890123'),
+('2024-04-05', '2024-04-12',  'QWE5D67', 'São Paulo', '45678901000104','45678901234'),
+('2024-06-10', '2024-06-14',  'RTY7E89', 'Ilha Bela', '56789012000105','56789012345');
 
 -- VIEWS
 CREATE VIEW Clientes_Transporte AS
@@ -239,7 +239,7 @@ SELECT
     Transporte.DataPartida,
     Transporte.NomeDestino
 FROM Cliente
-JOIN Plano ON Cliente.NomeDeUsuario = Plano.NomeDeUsuario
+JOIN Plano ON Cliente.CPF = Plano.CPFcliente
 JOIN Transporte ON Plano.PlacaTransporte = Transporte.Placa;
 
 CREATE VIEW Clientes_Hoteis AS
@@ -247,15 +247,15 @@ SELECT
     Cliente.NomeDeUsuario,
     Cliente.CPF,
     Hotel.nome AS NomeHotel,
-    Hotel.endereço AS EnderecoHotel
+    Hotel.endereco AS EnderecoHotel
 FROM Cliente
-JOIN Plano ON Cliente.NomeDeUsuario = Plano.NomeDeUsuario
+JOIN Plano ON Cliente.CPF = Plano.CPFcliente
 JOIN Hotel ON Plano.CNPJHotel = Hotel.CNPJ;
 
 CREATE VIEW Planos_PontosTuristicos AS
 SELECT 
     Plano.ID AS ID_Plano,
-    Plano.NomeDeUsuario,
+    Plano.CPFcliente,
     Plano.DataDePartida,
     Plano.DataDeRetorno,
     Plano.nomeDestino AS Destino,
