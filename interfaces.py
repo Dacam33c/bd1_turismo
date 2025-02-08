@@ -5,8 +5,12 @@ from auxiliar import *
 # Menu Principal
 def menu():
     layout = [[sg.Text("Selecione o que deseja fazer")],
-              [sg.Button("Cadastrar guia"), sg.Button("Cadastrar Hotel")],
-              [sg.Button("Cadastrar Destino")],
+              [sg.Button("Cadastrar guia"), sg.Button("Cadastrar Cliente")],
+              [sg.Button("Cadastrar Destino"),sg.Button("Cadastrar Localização")],
+              [sg.Button("Cadastrar Hotel"),sg.Button("Cadastrar Quarto")],
+              [sg.Button("Cadastrar Ponto Turístico")],
+              [sg.Button("Cadastrar Transporte"),sg.Button("Cadastrar Viagem")],
+              [sg.Button("Cadastrar Plano")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
