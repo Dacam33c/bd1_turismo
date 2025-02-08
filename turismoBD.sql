@@ -36,11 +36,27 @@ INSERT INTO Pessoa (CPF, Nome, endereco, dataDeNascimento, telefone) VALUES
 ('45678901234', 'Fernanda Lima Souza', 'Alameda das Rosas, 321, Belo Horizonte - MG', '1988-07-30', '(31) 92345-6789'),
 ('56789012345', 'Thiago Mendes Rocha', 'Praça da Liberdade, 987, Porto Alegre - RS', '1995-11-05', '(51) 93456-7890');
 
+CREATE TABLE Destino 
+( 
+    tipo varchar(100),  
+    nome varchar(100) PRIMARY KEY
+);
+INSERT INTO Destino (tipo, nome) VALUES
+('Praia', 'Fernando de Noronha'),
+('Montanha', 'Gramado'),
+('Histórico', 'Ouro Preto'),
+('Urbano', 'São Paulo'),
+('Ilha', 'Ilha Bela'),
+('Praia', 'Florianópolis'),
+('Praia','Porto Seguro'),
+('Urbano','Curitiba');
+
 CREATE TABLE Localizacao (
     endereco VARCHAR(100) PRIMARY KEY,
     nomeDestino VARCHAR(100),
     FOREIGN KEY (nomeDestino) REFERENCES Destino(nome)
 );
+
 INSERT INTO Localizacao (endereco, nomeDestino) VALUES
 ('Avenida Paulista, 123, São Paulo - SP', 'São Paulo'),
 ('Rodovia BR-101, Km 200, Florianópolis - SC', 'Florianópolis'),
@@ -63,20 +79,7 @@ INSERT INTO Hotel (CNPJ, tipo, nome, endereco) VALUES
 ('56789012000105', 'Hostel', 'Backpackers Hostel', 'Rua Augusta, 321, São Paulo - SP');
 
 
-CREATE TABLE Destino 
-( 
-    tipo varchar(100),  
-    nome varchar(100) PRIMARY KEY
-);
-INSERT INTO Destino (tipo, nome) VALUES
-('Praia', 'Fernando de Noronha'),
-('Montanha', 'Gramado'),
-('Histórico', 'Ouro Preto'),
-('Urbano', 'São Paulo'),
-('Ilha', 'Ilha Bela'),
-('Praia', 'Florianópolis'),
-('Praia','Porto Seguro'),
-('Urbano','Curitiba');
+
 
 
 CREATE TABLE pontoTuristico 
