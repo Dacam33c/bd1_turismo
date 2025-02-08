@@ -13,7 +13,6 @@ def insertSql(dicionario,conexao):
     ordem_personalizada = ['Pessoa','Destino', 'Localizacao', 'Hotel',  'pontoTuristico', 'Transporte', 'Cliente', 'Guia', 'Quarto', 'onibus', 'Aviao', 'localDePartida', 'Plano']
     prioridade = {chave: i for i, chave in enumerate(ordem_personalizada)}
     dicionario = dict(sorted(dicionario.items(), key=lambda item: prioridade[item[0]]))
-    print(dicionario)
     
     cursor = conexao.cursor()
     
@@ -23,10 +22,15 @@ def insertSql(dicionario,conexao):
         cursor.execute(sql)
         nomes_colunas = cursor.column_names
         #print(nomes_colunas)
-        
+        temId = 0
         cursor.fetchall()
         
-        sql = "INSERT INTO " + key + " VALUES (" + ("%s," * (len(dicionario[key][0])-1)) + "%s)"
+        if(nomes_colunas[0] == "ID"):
+            nomes_colunas = nomes_colunas[1:]
+        
+        textoColunas = ",".join(nomes_colunas)
+        
+        sql = "INSERT INTO " + key + " (" + textoColunas + ") " + " VALUES (" + ("%s," * (len(dicionario[key][0])-1)) + "%s)"
         #print(dicionario[key][0])
         #print(sql)
         

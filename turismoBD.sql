@@ -193,9 +193,9 @@ INSERT INTO transporte (PlacaTransporte,capacidade,tipo) VALUES
 
 CREATE TABLE Plano
 ( 
+ID INT AUTO_INCREMENT PRIMARY KEY,  
  DataDePartida varchar(100),  
  DataDeRetorno varchar(100),  
- ID INT AUTO_INCREMENT PRIMARY KEY,  
  CPFcliente varchar(11),
  FOREIGN KEY(CPFcliente) REFERENCES Cliente (CPF),
  PlacaTransporte varchar(100),
