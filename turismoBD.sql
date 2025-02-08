@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS Guia;
 DROP TABLE IF EXISTS Quarto;
 DROP TABLE IF EXISTS Plano;
 DROP TABLE IF EXISTS Localizacao;
-DROP VIEW IF EXISTS Clientes_Transporte;
+DROP VIEW IF EXISTS cliente_transporte;
 DROP VIEW IF EXISTS Clientes_Hoteis;
 DROP VIEW IF EXISTS Planos_PontosTuristicos;
 DROP TABLE IF EXISTS pontoFoto;
@@ -78,10 +78,6 @@ INSERT INTO Hotel (CNPJ, tipo, nome, endereco) VALUES
 ('45678901000104', 'Hotel Executivo', 'Blue Tower Business Hotel', 'Rua XV de Novembro, 789, Curitiba - PR'),
 ('56789012000105', 'Hostel', 'Backpackers Hostel', 'Rua Augusta, 321, São Paulo - SP');
 
-
-
-
-
 CREATE TABLE pontoTuristico 
 ( 
     Nome VARCHAR(100) PRIMARY KEY,  
@@ -109,6 +105,19 @@ Insert into pontoFoto (nome,foto) Values
 ('Avenida Paulista', NULL),
 ('Praia do Curral', NULL);
 
+CREATE TABLE transporte 
+( 
+ PlacaTransporte varchar(100) primary key,
+ capacidade int(10),
+ tipo varchar(100)
+);
+INSERT INTO transporte (PlacaTransporte,capacidade,tipo) VALUES
+('ABC1A23','10','onibus'),
+('XYZ9B87','30','onibus'),
+('LMN3C56','10','onibus'),
+('QWE5D67','40','aviao'),
+('RTY7E89','30','aviao');
+
 CREATE TABLE Viagens 
 ( 
 	ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -121,13 +130,16 @@ CREATE TABLE Viagens
     FOREIGN KEY(nomeDestino) REFERENCES Destino (nome),
     assentosOcupados int(10)
 );
-
 INSERT INTO Viagens (Preço, DataPartida, placa, hora, nomeDestino,assentosOcupados) VALUES
 (150, '2024-02-10', 'ABC1A23', '08:00', 'Fernando de Noronha','3'),
 (200, '2024-02-15', 'XYZ9B87', '14:30', 'Gramado','5'),
 (120, '2024-02-20', 'LMN3C56', '07:45', 'Ouro Preto','2'),
 (180, '2024-02-25', 'QWE5D67', '16:00', 'São Paulo','1'),
 (90, '2024-03-01', 'RTY7E89', '09:15', 'Ilha Bela','5');
+
+
+
+
 
 
 CREATE TABLE Cliente (
@@ -178,53 +190,38 @@ INSERT INTO Quarto (CNPJHotel,numero, preco, capacidade) VALUES
 ('45678901000104',404, 400.00, 2),
 ('56789012000105',505, 150.25, 1);
 
-
-CREATE TABLE transporte 
-( 
- PlacaTransporte varchar(100) primary key,
- capacidade int(10),
- tipo varchar(100)
-);
-INSERT INTO transporte (PlacaTransporte,capacidade,tipo) VALUES
-('ABC1A23','10','onibus'),
-('XYZ9B87','30','onibus'),
-('LMN3C56','10','onibus'),
-('QWE5D67','40','aviao'),
-('RTY7E89','30','aviao');
-
 CREATE TABLE Plano
 ( 
-ID INT AUTO_INCREMENT PRIMARY KEY,  
- DataDePartida varchar(100),  
- DataDeRetorno varchar(100),  
+ ID INT AUTO_INCREMENT PRIMARY KEY,  
  CPFcliente varchar(11),
  FOREIGN KEY(CPFcliente) REFERENCES Cliente (CPF),
- PlacaTransporte varchar(100),
- FOREIGN KEY(PlacaTransporte) REFERENCES Transporte (PlacaTransporte),
- nomeDestino varchar(100),
- FOREIGN KEY(nomeDestino) REFERENCES Destino (nome),
+ CPFguia varchar(11),
+ FOREIGN KEY(CPFguia) REFERENCES Guia (CPF),
  CNPJHotel varchar(14),
- FOREIGN KEY(CNPJHotel) REFERENCES Hotel (CNPJ)
+ numeroQuarto int(10),
+ FOREIGN KEY(numeroQuarto,CNPJHotel) REFERENCES quarto (numero, CNPJHotel),
+ IDviagem int(20),
+ FOREIGN KEY(IDviagem) REFERENCES viagens (ID)
 );
 
 
-INSERT INTO Plano (DataDePartida, DataDeRetorno, PlacaTransporte, nomeDestino, CNPJHotel, CPFcliente) VALUES
-('2024-03-10', '2024-03-15',  'ABC1A23', 'Fernando de Noronha', '12345678000101', '12345678901'),
-('2024-02-18', '2024-02-23',  'XYZ9B87', 'Gramado', '23456789000102','23456789012'),
-('2024-05-01', '2024-05-07',  'LMN3C56', 'Ouro Preto', '34567890000103','34567890123'),
-('2024-04-05', '2024-04-12',  'QWE5D67', 'São Paulo', '45678901000104','45678901234'),
-('2024-06-10', '2024-06-14',  'RTY7E89', 'Ilha Bela', '56789012000105','56789012345');
+INSERT INTO Plano (CPFcliente, CPFguia, CNPJHotel, numeroQuarto, IDviagem) VALUES
+('12345678901', '23456789012',  '12345678000101', '101', '1'),
+('23456789012', '23456789012',  '23456789000102', '202', '2'),
+('34567890123', '34567890123',  '34567890000103', '303', '3'),
+('45678901234', '45678901234',  '45678901000104', '404', '4'),
+('45678901234', '56789012345',  '56789012000105', '505', '5');
 
 -- VIEWS
-CREATE VIEW Clientes_Transporte AS
+CREATE VIEW cliente_transporte AS
 SELECT 
-    Cliente.NomeDeUsuario,
-    Cliente.CPF,
-    Transporte.PlacaTransporte AS PlacaTransporte,
-    plano.nomeDestino
-FROM Cliente
-JOIN Plano ON Cliente.CPF = Plano.CPFcliente
-JOIN Transporte ON Plano.PlacaTransporte = Transporte.PlacaTransporte;
+    p.CPFcliente, 
+    v.DataPartida, 
+    v.NomeDestino, 
+    v.Placa,
+    v.hora
+FROM Plano p
+JOIN Viagens v ON p.IDviagem = v.ID;
 
 CREATE VIEW Clientes_Hoteis AS
 SELECT 
@@ -236,15 +233,22 @@ FROM Cliente
 JOIN Plano ON Cliente.CPF = Plano.CPFcliente
 JOIN Hotel ON Plano.CNPJHotel = Hotel.CNPJ;
 
+#CREATE VIEW Planos_PontosTuristicos AS
+#SELECT 
+#    Plano.ID AS ID_Plano,
+#    Plano.CPFcliente,
+#    pontoTuristico.Nome AS NomePontoTuristico,
+#    pontoTuristico.preço AS PrecoPontoTuristico
+#FROM Plano
+#JOIN pontoTuristico ON Plano.nomeDestino = pontoTuristico.nomeDestino;
+
 CREATE VIEW Planos_PontosTuristicos AS
 SELECT 
-    Plano.ID AS ID_Plano,
-    Plano.CPFcliente,
-    Plano.DataDePartida,
-    Plano.DataDeRetorno,
-    Plano.nomeDestino AS Destino,
-    pontoTuristico.Nome AS NomePontoTuristico,
-    pontoTuristico.preço AS PrecoPontoTuristico
-FROM Plano
-JOIN pontoTuristico ON Plano.nomeDestino = pontoTuristico.nomeDestino;
-
+    p.ID AS ID_Plano,
+    p.CPFcliente AS CPF_Cliente,
+    pt.Nome AS Ponto_Turistico,
+    pt.Preço AS Preco
+FROM Plano p
+JOIN Viagens v ON p.IDviagem = v.ID
+JOIN Destino d ON v.NomeDestino = d.Nome
+JOIN pontoTuristico pt ON d.Nome = pt.nomeDestino;

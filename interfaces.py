@@ -9,8 +9,7 @@ def menu():
               [sg.Button("Cadastrar Destino"),sg.Button("Cadastrar Localização")],
               [sg.Button("Cadastrar Hotel"),sg.Button("Cadastrar Quarto")],
               [sg.Button("Cadastrar Ponto Turístico")],
-              [sg.Button("Cadastrar Transporte"),sg.Button("Cadastrar Viagem")],
-              [sg.Button("Cadastrar Plano")],
+              [sg.Button("Cadastrar Transporte")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -46,6 +45,14 @@ def menu():
         elif event == "Cadastrar Ponto Turístico":
             window.hide()
             cadastrar_turistico()
+            window.un_hide()
+        elif event == "Cadastrar Transporte":
+            window.hide()
+            cadastrar_transporte()
+            window.un_hide()
+        elif event == "Cadastrar Viagem":
+            window.hide()
+            cadastrar_viagem()
             window.un_hide()
 
     window.close()
@@ -332,6 +339,37 @@ def cadastrar_turistico():
             insertSql(ponto,conexao)
             conexao.close()
             sg.popup(f"ponto {values['nome']} cadastrado!")
+
+    window.close()
+
+def cadastrar_transporte():
+    layout = [[sg.Text("Cadastro de Transporte")],
+              [sg.Text("placa", size=(10,1)), sg.InputText(key='placa', size=(20,1))],
+              [sg.Text("capacidade", size=(10,1)), sg.InputText(key='capacidade', size=(20,1))],
+              [sg.Text("tipo", size=(10,1)), sg.InputText(key='tipo', size=(20,1))],
+              [sg.Button("Salvar"), sg.Button("Voltar")]]
+    window = sg.Window("Cadastrar ponto transporte", layout)
+    
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == "Voltar":
+            break
+        elif event == "Salvar":
+            
+            conexao = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="309320",
+            database="turismo"
+            )
+
+            if conexao.is_connected():
+                print("Conectado ao MySQL")
+
+            transporte = {'transporte' : [ ( values['placa'], values['capacidade'],values['tipo'] )] }
+            insertSql(transporte,conexao)
+            conexao.close()
+            sg.popup(f"transporte {values['placa']} cadastrado!")
 
     window.close()
 

@@ -10,7 +10,7 @@ pode inserir varios dados em varias tabelas ao mesmo tempo
 '''
 def insertSql(dicionario,conexao):
     
-    ordem_personalizada = ['Pessoa','Destino', 'Localizacao', 'Hotel',  'pontoTuristico','pontoFoto','Viagens', 'Cliente', 'Guia', 'Quarto','transporte', 'Plano']
+    ordem_personalizada = ['Pessoa','Destino', 'Localizacao', 'Hotel',  'pontoTuristico','pontoFoto','transporte','Viagens', 'Cliente', 'Guia', 'Quarto', 'Plano']
     prioridade = {chave: i for i, chave in enumerate(ordem_personalizada)}
     dicionario = dict(sorted(dicionario.items(), key=lambda item: prioridade[item[0]]))
     
