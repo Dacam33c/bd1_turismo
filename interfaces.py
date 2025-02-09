@@ -439,7 +439,20 @@ def cadastrar_login():
     window.close()
 
 def tela_user(nome):
+
+    conexao = mysql.connector.connect(
+                    host="localhost",
+                    user="root",
+                    password="309320",
+                    database="turismo"
+                )
+
+    if conexao.is_connected():
+        print("Conectado ao MySQL")
+    cursor = conexao.cursor()
+        
     layout = [[sg.Text(f"Bem vindo {nome}")],
+              [sg.Combo(values=obter_dropdown(cursor), readonly=True, size=(30, 6))],
               [sg.Button("Salvar"), sg.Button("Voltar")]]
     window = sg.Window("logado", layout)
     
