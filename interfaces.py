@@ -3,13 +3,14 @@ import mysql.connector
 from auxiliar import *
 
 # Menu Principal
-def menu():
+def menu(conexao, cursor):
     layout = [[sg.Text("Selecione o que deseja fazer")],
               [sg.Button("Cadastrar guia"), sg.Button("Cadastrar Cliente")],
               [sg.Button("Cadastrar Destino"),sg.Button("Cadastrar Localização")],
               [sg.Button("Cadastrar Hotel"),sg.Button("Cadastrar Quarto")],
               [sg.Button("Cadastrar Ponto Turístico")],
               [sg.Button("Cadastrar Transporte")],
+              [sg.Button("Cadastrar foto")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -53,6 +54,10 @@ def menu():
         elif event == "Cadastrar Viagem":
             window.hide()
             cadastrar_viagem()
+            window.un_hide()
+        elif event == "Cadastrar foto":
+            window.hide()
+            cadastrar_imagem(conexao, cursor)
             window.un_hide()
 
     window.close()
@@ -372,5 +377,27 @@ def cadastrar_transporte():
             sg.popup(f"transporte {values['placa']} cadastrado!")
 
     window.close()
+
+def cadastrar_imagem(conexao, cursor):
+    layout = [
+        [sg.Text("Escolha uma imagem para enviar ao banco de dados")],
+        [sg.InputText(key="-FILE-", enable_events=True), sg.FileBrowse("Selecionar", file_types=(("Imagens", "*.png;*.jpg;*.jpeg"),))],
+        [sg.Button("Enviar"), sg.Button("Sair")]
+    ]
+    janela = sg.Window("Enviar imagem", layout)
+
+    while True:
+        evento, valores = janela.read()
+
+        if evento == sg.WINDOW_CLOSED or evento == "Sair":
+            break
+        elif evento == "Enviar":
+            caminho_imagem = valores["-FILE-"]
+            if caminho_imagem:
+                nome_imagem = caminho_imagem.split("/")[-1]  # Obtém apenas o nome do arquivo
+                salvar_imagem(nome_imagem, caminho_imagem, conexao, cursor)
+            else:
+                sg.popup("Por favor, selecione uma imagem! ⚠")
+    janela.close()
 
 #menu()

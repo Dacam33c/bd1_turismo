@@ -1,4 +1,5 @@
 import mysql.connector
+import PySimpleGUI as sg
 
 
 '''
@@ -48,3 +49,18 @@ dicionarioValues = {
 
 insertSql(dicionarioValues,conexao)
 '''
+
+# Função para converter imagem para arquivo binário
+def img_to_blob(caminho):
+    with open(caminho, 'rb') as arquivo:
+        return arquivo.read()
+
+def salvar_imagem(nome, caminho, conexao, cursor):
+    try:
+        img_convertida = img_to_blob(caminho)
+        query = "INSERT INTO pontoFoto (Nome, pontoTuristico, foto) VALUES (%s, %s, %s)"
+        cursor.execute(query, (nome, None, img_convertida))
+        conexao.commit()
+        sg.popup("Imagem salva com sucesso")
+    except Exception as e:
+        sg.popup(f"Falha ao salvar imagem: {e}")
