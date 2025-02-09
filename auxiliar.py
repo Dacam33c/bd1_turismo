@@ -58,9 +58,15 @@ def img_to_blob(caminho):
 def salvar_imagem(nome, caminho, conexao, cursor):
     try:
         img_convertida = img_to_blob(caminho)
-        query = "INSERT INTO pontoFoto (Nome, pontoTuristico, foto) VALUES (%s, %s, %s)"
-        cursor.execute(query, (nome, None, img_convertida))
+        query = "INSERT INTO pontoFoto (Nome, foto) VALUES (%s, %s)"
+        cursor.execute(query, (nome, img_convertida))
         conexao.commit()
         sg.popup("Imagem salva com sucesso")
     except Exception as e:
         sg.popup(f"Falha ao salvar imagem: {e}")
+
+# Função para obter Nome dos pontos turísticos para usar no Menu Dropdown de salvar imagem
+def obter_dropdown(cursor):
+    cursor.execute("SELECT Nome from pontoTuristico")
+    opcoes = [linha[0] for linha in cursor.fetchall()]
+    return opcoes

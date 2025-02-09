@@ -53,7 +53,7 @@ def menu(conexao, cursor):
             window.un_hide()
         elif event == "Cadastrar Viagem":
             window.hide()
-            cadastrar_viagem()
+            #cadastrar_viagem()
             window.un_hide()
         elif event == "Cadastrar foto":
             window.hide()
@@ -382,6 +382,7 @@ def cadastrar_imagem(conexao, cursor):
     layout = [
         [sg.Text("Escolha uma imagem para enviar ao banco de dados")],
         [sg.InputText(key="-FILE-", enable_events=True), sg.FileBrowse("Selecionar", file_types=(("Imagens", "*.png;*.jpg;*.jpeg"),))],
+        [sg.Combo(values=obter_dropdown(cursor), readonly=True, size=(30, 6))],
         [sg.Button("Enviar"), sg.Button("Sair")]
     ]
     janela = sg.Window("Enviar imagem", layout)
