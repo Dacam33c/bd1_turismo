@@ -102,7 +102,6 @@ Insert into pontoFoto (nome,foto) Values
 ('Praia do Sancho',NULL),
 ('Lago Negro',NULL),
 ('Museu da Inconfidência',NULL),
-('Avenida Paulista', NULL),
 ('Praia do Curral', NULL);
 
 CREATE TABLE transporte 
@@ -146,15 +145,16 @@ CREATE TABLE Cliente (
     CPF VARCHAR(11) PRIMARY KEY,
     NomeDeUsuario VARCHAR(100),
     desconto INT,
-    FOREIGN KEY (CPF) REFERENCES Pessoa(CPF)
+    FOREIGN KEY (CPF) REFERENCES Pessoa(CPF),
+    senha varchar(100)
 );
 
-INSERT INTO Cliente (desconto, NomeDeUsuario, CPF) VALUES
-(10, 'joaosilva', '12345678901'),
-(15, 'mariasantos', '23456789012'),
-(5, 'pedrosouza', '34567890123'),
-(20, 'anacarvalho', '45678901234'),
-(8, 'lucasferreira', '56789012345');
+INSERT INTO Cliente (desconto, NomeDeUsuario, CPF,senha) VALUES
+(10, 'joaosilva', '12345678901','12345'),
+(15, 'mariasantos', '23456789012','23456'),
+(5, 'pedrosouza', '34567890123','34567'),
+(20, 'anacarvalho', '45678901234','45678'),
+(8, 'lucasferreira', '56789012345','56789');
 
 
 CREATE TABLE Guia 

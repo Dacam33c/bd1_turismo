@@ -10,6 +10,7 @@ def menu():
               [sg.Button("Cadastrar Hotel"),sg.Button("Cadastrar Quarto")],
               [sg.Button("Cadastrar Ponto Turístico")],
               [sg.Button("Cadastrar Transporte")],
+              [sg.Button("Login")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -50,9 +51,9 @@ def menu():
             window.hide()
             cadastrar_transporte()
             window.un_hide()
-        elif event == "Cadastrar Viagem":
+        elif event == "Login":
             window.hide()
-            cadastrar_viagem()
+            cadastrar_login()
             window.un_hide()
 
     window.close()
@@ -370,6 +371,85 @@ def cadastrar_transporte():
             insertSql(transporte,conexao)
             conexao.close()
             sg.popup(f"transporte {values['placa']} cadastrado!")
+
+    window.close()
+
+
+def cadastrar_login():
+    layout = [[sg.Text("Login")],
+              [sg.Text("CPF", size=(10,1)), sg.InputText(key='cpf', size=(20,1))],
+              [sg.Text("Senha", size=(10,1)), sg.InputText(key='senha', size=(20,1))],
+              [sg.Button("Salvar"), sg.Button("Voltar")]]
+    window = sg.Window("Login", layout)
+    
+    while True:
+        event, values = window.read()
+
+        if event == sg.WIN_CLOSED or event == "Voltar":
+            break
+        elif event == "Salvar":
+            try:
+                # Conectar ao banco de dados
+                conexao = mysql.connector.connect(
+                    host="localhost",
+                    user="root",
+                    password="309320",
+                    database="turismo"
+                )
+
+                if conexao.is_connected():
+                    print("Conectado ao MySQL")
+
+                cpfCliente = values['cpf']
+                senhaCliente = values['senha']
+
+                # Verificar se os campos foram preenchidos
+                if not cpfCliente or not senhaCliente:
+                    sg.popup("Por favor, insira CPF e senha!")
+                    continue
+
+                # Query para verificar CPF e Senha
+                sql = """
+                    SELECT p.nome FROM Pessoa p
+                    INNER JOIN Cliente c ON p.cpf = c.cpf
+                    WHERE c.cpf = %s AND c.senha = %s;
+                """
+
+                cursor = conexao.cursor()
+                cursor.execute(sql, (cpfCliente, senhaCliente))
+                resultado = cursor.fetchone()
+
+                if 'cursor' in locals():
+                    cursor.close()
+                if 'conexao' in locals() and conexao.is_connected():
+                    conexao.close()
+
+                if resultado:
+                    sg.popup(f"Login funfo, parabéns {resultado[0]}")
+                    window.hide()
+                    tela_user(resultado[0])
+                    window.un_hide()
+
+                else:
+                    sg.popup("Pode não man")
+
+            except mysql.connector.Error as err:
+                sg.popup_error(f"Erro ao conectar ao MySQL: {err}")
+                
+    window.close()
+
+def tela_user(nome):
+    layout = [[sg.Text(f"Bem vindo {nome}")],
+              [sg.Button("Salvar"), sg.Button("Voltar")]]
+    window = sg.Window("logado", layout)
+    
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == "Voltar":
+            break
+        elif event == "Salvar":
+            
+            pass
 
     window.close()
 
