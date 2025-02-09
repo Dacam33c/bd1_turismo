@@ -58,6 +58,9 @@ def img_to_blob(caminho):
 def salvar_imagem(nome, caminho, conexao, cursor):
     try:
         img_convertida = img_to_blob(caminho)
+
+        nome = nome[:-4]
+        print(nome)
         query = "INSERT INTO pontoFoto (Nome, foto) VALUES (%s, %s)"
         cursor.execute(query, (nome, img_convertida))
         conexao.commit()

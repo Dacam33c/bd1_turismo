@@ -102,7 +102,6 @@ Insert into pontoFoto (nome,foto) Values
 ('Praia do Sancho',NULL),
 ('Lago Negro',NULL),
 ('Museu da Inconfidência',NULL),
-('Avenida Paulista', NULL),
 ('Praia do Curral', NULL);
 
 CREATE TABLE transporte 
