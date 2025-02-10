@@ -542,7 +542,7 @@ def criar_plano(cpf):
         [sg.Text("Guia:", size=(10,1)), sg.Combo(values=["Selecione um Destino"], readonly=True, size=(30, 6),key = 'guia'),sg.Button("Confirmar Guia")],
         [sg.Text("Preço:", size=(10,1)), sg.Text("", size=(10,1),key ='preçoGuia')],
         [sg.Text("Total:", size=(10,1)), sg.Text("", size=(10,1),key ='total')],
-        [sg.Button("Enviar"),sg.Button("Sair")]
+        [sg.Button("Confirmar Plano"),sg.Button("Sair")]
     ]
     janela = sg.Window("Plano", layout)
 
@@ -552,12 +552,18 @@ def criar_plano(cpf):
         if evento == sg.WINDOW_CLOSED or evento == "Sair":
             break
         elif evento == "Confirmar Destino":
-            sql = "select DataPartida,placa,preço from viagens where nomeDestino = '" + valores[0] + "';"
+            sql = "select DataPartida,placa,preço,ID from viagens where nomeDestino = '" + valores[0] + "';"
             cursor.execute(sql)
             fetch = cursor.fetchall()
-            destino = [linha[0] for linha in fetch]
+            data = [linha[0] for linha in fetch]
+            idviagem = [linha[3] for linha in fetch]
 
-            janela["-Combo-"].update(values = destino)
+            viagem = []
+
+            for idex in range(len(idviagem)):
+                viagem.append((idviagem[idex],data[idex]))
+
+            janela["-Combo-"].update(values = viagem)
 
             sql = "SELECT Hotel.Nome,Hotel.CNPJ FROM Hotel JOIN Localizacao ON Hotel.endereco = Localizacao.endereco WHERE Localizacao.nomeDestino = '" + valores[0] + "';"
             cursor.execute(sql)
@@ -567,7 +573,6 @@ def criar_plano(cpf):
             janela["hotel"].update(values = hotel)
 
             sql = "Select Guia.ID,P.nome from Guia join Pessoa P on Guia.CPF = P.CPF where Guia.nomeDestino = '" + valores[0] + "';"
-            print(sql)
             cursor.execute(sql)
             fetch = cursor.fetchall()
 
@@ -579,14 +584,12 @@ def criar_plano(cpf):
             
             for idex in range(len(idguia)):
                 guia.append((idguia[idex],nomeguia[idex]))
-
-            print(guia)
             
             janela["guia"].update(values = guia)
 
 
         elif evento == 'Confirmar Viagem':
-            sql = "select placa,preço,hora from viagens where DataPartida = '" + valores['-Combo-'] + "';"
+            sql = "select placa,preço,hora from viagens where DataPartida = '" + valores['-Combo-'][1] + "';"
             cursor.execute(sql)
             fetch = cursor.fetchall()
             placa = [linha[0] for linha in fetch]
@@ -616,9 +619,6 @@ def criar_plano(cpf):
             janela["tipoHotel"].update(tipo[0])
             janela["endereçoHotel"].update(endereço[0])
 
-
-
-            print(hotelcnpj)
             sql = "select numero from quarto where CNPJHotel = '" + hotelcnpj[0] + "';"
             cursor.execute(sql)
             fetch = cursor.fetchall()
@@ -637,7 +637,6 @@ def criar_plano(cpf):
         
         elif evento == 'Confirmar Guia':
             idGuia = valores['guia'][0]
-            print(idGuia)
 
             sql = "select preço from guia where id = '" + str(idGuia) + "';"
             cursor.execute(sql)
@@ -649,8 +648,37 @@ def criar_plano(cpf):
 
             total = float(janela["preçoGuia"].get()) + float(janela["preçoQuarto"].get()) + float(janela['pr'].get())
             janela['total'].update(total)
-
+        
+        elif evento == "Confirmar Plano":
             
+            conexao = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="309320",
+            database="turismo"
+            )
+
+            if conexao.is_connected():
+                print("Conectado ao MySQL")
+
+            cursor = conexao.cursor()
+
+            sql = "select CPF from guia where id = '" + str(idGuia) + "';"
+            cursor.execute(sql)
+            fetch = cursor.fetchall()
+            cpfguia = [linha[0] for linha in fetch]
+
+            print(cpfguia)
+            print(hotelcnpj)
+            print(valores['quarto'])
+            print(valores['-Combo-'][0])
+
+            Plano = {'Plano' : [ ( cpf, cpfguia[0], hotelcnpj[0], valores['quarto'], valores['-Combo-'][0] )] }
+            insertSql(Plano,conexao)
+            conexao.close()
+            sg.popup("Plano cadastrado!")
+
+            janela.close()        
             
     janela.close()
 
