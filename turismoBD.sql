@@ -1,4 +1,3 @@
-show databases;
 use turismo;
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -18,6 +17,9 @@ DROP VIEW IF EXISTS Clientes_Hoteis;
 DROP VIEW IF EXISTS Planos_PontosTuristicos;
 DROP TABLE IF EXISTS pontoFoto;
 DROP TABLE IF EXISTS Viagens;
+DROP TABLE IF EXISTS aviao;
+DROP TABLE IF EXISTS localdepartida;
+DROP TABLE IF EXISTS onibus;
 
 
 SET FOREIGN_KEY_CHECKS = 0;
