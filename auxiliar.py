@@ -87,3 +87,13 @@ def get_viagens(destino):
 
     if(destino == 0):
         return ['seleciona um destino']
+
+
+def obter_imagem(ponto_turistico, cursor):
+    
+    cursor.execute("SELECT foto FROM pontoFoto WHERE nome = %s", (ponto_turistico,))
+    resultado = cursor.fetchone()
+    
+    if resultado and resultado[0]:
+        return resultado[0]  # Retorna os bytes da imagem
+    return None

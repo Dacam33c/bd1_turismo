@@ -1,6 +1,9 @@
 import PySimpleGUI as sg
 import mysql.connector
 from auxiliar import *
+from views import *
+import io
+from PIL import Image
 
 # Menu Principal
 def menu(conexao, cursor):
@@ -12,6 +15,10 @@ def menu(conexao, cursor):
               [sg.Button("Cadastrar Transporte")],
               [sg.Button("Login")],
               [sg.Button("Cadastrar foto")],
+              [sg.Button("Ver Clientes-Transportes")],
+              [sg.Button("Ver Planos-Pontos turísticos")],
+              [sg.Button("Ver Clientes-Hoteis")],
+              [sg.Button("Ver Foto")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -59,6 +66,22 @@ def menu(conexao, cursor):
         elif event == "Cadastrar foto":
             window.hide()
             cadastrar_imagem(conexao, cursor)
+            window.un_hide()
+        elif event == "Ver Clientes-Transportes":
+            window.hide()
+            cliente_transporte(cursor)
+            window.un_hide()
+        elif event == "Ver Planos-Pontos turísticos":
+            window.hide()
+            Planos_PontosTuristicos(cursor)
+            window.un_hide()
+        elif event == "Ver Clientes-Hoteis":
+            window.hide()
+            Clientes_Hoteis(cursor)
+            window.un_hide()
+        elif event == "Ver Foto":
+            window.hide()
+            VerImagem(cursor)
             window.un_hide()
 
     window.close()
@@ -450,7 +473,7 @@ def tela_user(cpf):
     conexao = mysql.connector.connect(
                     host="localhost",
                     user="root",
-                    password="309320",
+                    password="senha123",
                     database="turismo"
                 )
 
@@ -682,4 +705,128 @@ def criar_plano(cpf):
             
     janela.close()
 
+def cliente_transporte(cursor):
+    colunas, dados = VIEW_cliente_transporte(cursor)
+    layout = [
+        [sg.Text("Tabela de Transportes")],
+        [sg.Table(values=dados, headings=colunas, 
+                auto_size_columns=True,
+                justification="left",
+                num_rows=min(10, len(dados)),  # Limita a exibição a 10 linhas
+                key="-TABELA-")],
+        [sg.Button("Atualizar"), sg.Button("Sair")]
+    ]
+
+    # Criar janela
+    janela = sg.Window("Consulta ao Banco de Dados", layout)
+
+    # Loop da interface
+    while True:
+        evento, valores = janela.read()
+        
+        if evento == sg.WINDOW_CLOSED or evento == "Sair":
+            break
+        elif evento == "Atualizar":
+            colunas, dados = VIEW_cliente_transporte(cursor)
+            janela["-TABELA-"].update(values=dados)
+
+    janela.close()
+
+
+def Planos_PontosTuristicos(cursor):
+    colunas, dados = VIEW_Planos_PontosTuristicos(cursor)
+    layout = [
+        [sg.Text("Tabela de Pontos turísticos")],
+        [sg.Table(values=dados, headings=colunas, 
+                auto_size_columns=True,
+                justification="left",
+                num_rows=min(10, len(dados)),  # Limita a exibição a 10 linhas
+                key="-TABELA-")],
+        [sg.Button("Atualizar"), sg.Button("Sair")]
+    ]
+
+    # Criar janela
+    janela = sg.Window("Consulta ao Banco de Dados", layout)
+
+    # Loop da interface
+    while True:
+        evento, valores = janela.read()
+        
+        if evento == sg.WINDOW_CLOSED or evento == "Sair":
+            break
+        elif evento == "Atualizar":
+            colunas, dados = VIEW_Planos_PontosTuristicos(cursor)
+            janela["-TABELA-"].update(values=dados)
+
+    janela.close()
+
+
+def Clientes_Hoteis(cursor):
+    colunas, dados = VIEW_Clientes_Hoteis(cursor)
+    layout = [
+        [sg.Text("Tabela de Clientes-hoteis")],
+        [sg.Table(values=dados, headings=colunas, 
+                auto_size_columns=True,
+                justification="left",
+                num_rows=min(10, len(dados)),  # Limita a exibição a 10 linhas
+                key="-TABELA-")],
+        [sg.Button("Atualizar"), sg.Button("Sair")]
+    ]
+
+    # Criar janela
+    janela = sg.Window("Consulta ao Banco de Dados", layout)
+
+    # Loop da interface
+    while True:
+        evento, valores = janela.read()
+        
+        if evento == sg.WINDOW_CLOSED or evento == "Sair":
+            break
+        elif evento == "Atualizar":
+            colunas, dados = VIEW_Clientes_Hoteis(cursor)
+            janela["-TABELA-"].update(values=dados)
+
+    janela.close()
+
+
+def VerImagem(cursor):
+    pontos_turisticos = obter_dropdown(cursor)
+
+    
+    layout = [
+        [sg.Text("Selecione um Ponto Turístico:")],
+        [sg.Combo(pontos_turisticos, key="-PONTO-", readonly=True, size=(30, 6))],
+        [sg.Button("Consultar")],
+        [sg.Image(key="-IMAGEM-")],  # Espaço reservado para a imagem
+        [sg.Text("", key="-MSG-", text_color="red")]
+    ]
+
+    janela = sg.Window("Visualizador de Imagens", layout)
+
+    # Loop de eventos
+    while True:
+        evento, valores = janela.read()
+        
+        if evento == sg.WINDOW_CLOSED:
+            break
+        elif evento == "Consultar":
+            ponto_selecionado = valores["-PONTO-"]
+            
+            if not ponto_selecionado:
+                janela["-MSG-"].update("Por favor, selecione um ponto turístico.")
+                janela["-IMAGEM-"].update(data=None)
+            else:
+                imagem_bytes = obter_imagem(ponto_selecionado, cursor)
+                if imagem_bytes:
+                    imagem_pil = Image.open(io.BytesIO(imagem_bytes))
+                    imagem_pil.thumbnail((400, 400))  # Ajustar tamanho para exibição
+                    bio = io.BytesIO()
+                    imagem_pil.save(bio, format="PNG")
+                    janela["-IMAGEM-"].update(data=bio.getvalue())
+                    janela["-MSG-"].update("")
+                else:
+                    janela["-IMAGEM-"].update(data=None)
+                    janela["-MSG-"].update("Nenhuma imagem encontrada para este ponto turístico.")
+
+    janela.close()
 #menu()
