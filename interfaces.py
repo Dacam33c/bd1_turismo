@@ -109,7 +109,7 @@ def cadastrar_pessoa():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -154,7 +154,7 @@ def cadastrar_guia():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -196,7 +196,7 @@ def cadastrar_cliente():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -235,7 +235,7 @@ def cadastrar_hotel():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -265,7 +265,7 @@ def cadastrar_destino():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -296,7 +296,7 @@ def cadastrar_Localizacao():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -328,7 +328,7 @@ def cadastrar_quarto():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -359,7 +359,7 @@ def cadastrar_turistico():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -390,7 +390,7 @@ def cadastrar_transporte():
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
@@ -423,7 +423,7 @@ def cadastrar_login():
                 conexao = mysql.connector.connect(
                     host="localhost",
                     user="root",
-                    password="309320",
+                    password="senha123",
                     database="turismo"
                 )
 
@@ -455,13 +455,13 @@ def cadastrar_login():
                     conexao.close()
 
                 if resultado:
-                    sg.popup(f"Login funfo, parabéns {resultado[0]}")
+                    sg.popup(f"Login efetuado: {resultado[0]}")
                     window.hide()
                     tela_user(values['cpf'])
                     window.un_hide()
 
                 else:
-                    sg.popup("Pode não man")
+                    sg.popup("Erro ao fazer Login")
 
             except mysql.connector.Error as err:
                 sg.popup_error(f"Erro ao conectar ao MySQL: {err}")
@@ -536,7 +536,7 @@ def criar_plano(cpf):
     conexao = mysql.connector.connect(
                     host="localhost",
                     user="root",
-                    password="309320",
+                    password="senha123",
                     database="turismo"
                 )
 
@@ -677,7 +677,7 @@ def criar_plano(cpf):
             conexao = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="309320",
+            password="senha123",
             database="turismo"
             )
 
