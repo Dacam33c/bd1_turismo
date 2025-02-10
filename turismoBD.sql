@@ -150,7 +150,7 @@ CREATE TABLE Cliente (
 );
 
 INSERT INTO Cliente (desconto, NomeDeUsuario, CPF,senha) VALUES
-(10, 'joaosilva', '12345678901','12345'),
+(10, 'joaosilva', '1','1'),
 (15, 'mariasantos', '23456789012','23456'),
 (5, 'pedrosouza', '34567890123','34567'),
 (20, 'anacarvalho', '45678901234','45678'),

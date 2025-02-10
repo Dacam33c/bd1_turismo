@@ -73,3 +73,9 @@ def obter_dropdown(cursor):
     cursor.execute("SELECT Nome from pontoTuristico")
     opcoes = [linha[0] for linha in cursor.fetchall()]
     return opcoes
+
+def obter_dropdown2(cursor, cpf):
+    sql = "select ID from Plano where CPFcliente = %s;"
+    cursor.execute(sql, [cpf])
+    opcoes = [linha[0] for linha in cursor.fetchall()]
+    return opcoes

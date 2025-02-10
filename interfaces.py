@@ -476,7 +476,7 @@ def tela_user(cpf):
             idPlano = values[0]
             sql = 'delete from plano where ID = ' + str(idPlano) +';'
             cursor.execute(sql)
-            conexao.commit();
+            conexao.commit()
             
         elif event == "Criar plano":
             
