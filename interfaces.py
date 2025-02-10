@@ -14,6 +14,8 @@ def menu(conexao, cursor):
               [sg.Button("Login")],
               [sg.Button("Cadastrar foto")],
               [sg.Button("Ver Clientes-Transportes")],
+              [sg.Button("Ver Planos-Pontos turísticos")],
+              [sg.Button("Ver Clientes-Hoteis")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -65,6 +67,14 @@ def menu(conexao, cursor):
         elif event == "Ver Clientes-Transportes":
             window.hide()
             cliente_transporte(cursor)
+            window.un_hide()
+        elif event == "Ver Planos-Pontos turísticos":
+            window.hide()
+            Planos_PontosTuristicos(cursor)
+            window.un_hide()
+        elif event == "Ver Clientes-Hoteis":
+            window.hide()
+            Clientes_Hoteis(cursor)
             window.un_hide()
 
     window.close()
@@ -683,6 +693,62 @@ def cliente_transporte(cursor):
             break
         elif evento == "Atualizar":
             colunas, dados = VIEW_cliente_transporte(cursor)
+            janela["-TABELA-"].update(values=dados)
+
+    janela.close()
+
+
+def Planos_PontosTuristicos(cursor):
+    colunas, dados = VIEW_Planos_PontosTuristicos(cursor)
+    layout = [
+        [sg.Text("Tabela de Pontos turísticos")],
+        [sg.Table(values=dados, headings=colunas, 
+                auto_size_columns=True,
+                justification="left",
+                num_rows=min(10, len(dados)),  # Limita a exibição a 10 linhas
+                key="-TABELA-")],
+        [sg.Button("Atualizar"), sg.Button("Sair")]
+    ]
+
+    # Criar janela
+    janela = sg.Window("Consulta ao Banco de Dados", layout)
+
+    # Loop da interface
+    while True:
+        evento, valores = janela.read()
+        
+        if evento == sg.WINDOW_CLOSED or evento == "Sair":
+            break
+        elif evento == "Atualizar":
+            colunas, dados = VIEW_Planos_PontosTuristicos(cursor)
+            janela["-TABELA-"].update(values=dados)
+
+    janela.close()
+
+
+def Clientes_Hoteis(cursor):
+    colunas, dados = VIEW_Clientes_Hoteis(cursor)
+    layout = [
+        [sg.Text("Tabela de Clientes-hoteis")],
+        [sg.Table(values=dados, headings=colunas, 
+                auto_size_columns=True,
+                justification="left",
+                num_rows=min(10, len(dados)),  # Limita a exibição a 10 linhas
+                key="-TABELA-")],
+        [sg.Button("Atualizar"), sg.Button("Sair")]
+    ]
+
+    # Criar janela
+    janela = sg.Window("Consulta ao Banco de Dados", layout)
+
+    # Loop da interface
+    while True:
+        evento, valores = janela.read()
+        
+        if evento == sg.WINDOW_CLOSED or evento == "Sair":
+            break
+        elif evento == "Atualizar":
+            colunas, dados = VIEW_Clientes_Hoteis(cursor)
             janela["-TABELA-"].update(values=dados)
 
     janela.close()
