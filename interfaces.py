@@ -2,6 +2,8 @@ import PySimpleGUI as sg
 import mysql.connector
 from auxiliar import *
 from views import *
+import io
+from PIL import Image
 
 # Menu Principal
 def menu(conexao, cursor):
@@ -16,6 +18,7 @@ def menu(conexao, cursor):
               [sg.Button("Ver Clientes-Transportes")],
               [sg.Button("Ver Planos-Pontos turísticos")],
               [sg.Button("Ver Clientes-Hoteis")],
+              [sg.Button("Ver Foto")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -75,6 +78,10 @@ def menu(conexao, cursor):
         elif event == "Ver Clientes-Hoteis":
             window.hide()
             Clientes_Hoteis(cursor)
+            window.un_hide()
+        elif event == "Ver Foto":
+            window.hide()
+            VerImagem(cursor)
             window.un_hide()
 
     window.close()
@@ -750,6 +757,48 @@ def Clientes_Hoteis(cursor):
         elif evento == "Atualizar":
             colunas, dados = VIEW_Clientes_Hoteis(cursor)
             janela["-TABELA-"].update(values=dados)
+
+    janela.close()
+
+
+def VerImagem(cursor):
+    pontos_turisticos = obter_dropdown(cursor)
+
+    
+    layout = [
+        [sg.Text("Selecione um Ponto Turístico:")],
+        [sg.Combo(pontos_turisticos, key="-PONTO-", readonly=True, size=(30, 6))],
+        [sg.Button("Consultar")],
+        [sg.Image(key="-IMAGEM-")],  # Espaço reservado para a imagem
+        [sg.Text("", key="-MSG-", text_color="red")]
+    ]
+
+    janela = sg.Window("Visualizador de Imagens", layout)
+
+    # Loop de eventos
+    while True:
+        evento, valores = janela.read()
+        
+        if evento == sg.WINDOW_CLOSED:
+            break
+        elif evento == "Consultar":
+            ponto_selecionado = valores["-PONTO-"]
+            
+            if not ponto_selecionado:
+                janela["-MSG-"].update("Por favor, selecione um ponto turístico.")
+                janela["-IMAGEM-"].update(data=None)
+            else:
+                imagem_bytes = obter_imagem(ponto_selecionado, cursor)
+                if imagem_bytes:
+                    imagem_pil = Image.open(io.BytesIO(imagem_bytes))
+                    imagem_pil.thumbnail((400, 400))  # Ajustar tamanho para exibição
+                    bio = io.BytesIO()
+                    imagem_pil.save(bio, format="PNG")
+                    janela["-IMAGEM-"].update(data=bio.getvalue())
+                    janela["-MSG-"].update("")
+                else:
+                    janela["-IMAGEM-"].update(data=None)
+                    janela["-MSG-"].update("Nenhuma imagem encontrada para este ponto turístico.")
 
     janela.close()
 #menu()
