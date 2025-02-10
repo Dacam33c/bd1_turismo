@@ -3,7 +3,7 @@ import mysql.connector
 from auxiliar import *
 
 # Menu Principal
-def menu():
+def menu(conexao, cursor):
     layout = [[sg.Text("Selecione o que deseja fazer")],
               [sg.Button("Cadastrar guia"), sg.Button("Cadastrar Cliente")],
               [sg.Button("Cadastrar Destino"),sg.Button("Cadastrar Localização")],
@@ -11,6 +11,7 @@ def menu():
               [sg.Button("Cadastrar Ponto Turístico")],
               [sg.Button("Cadastrar Transporte")],
               [sg.Button("Login")],
+              [sg.Button("Cadastrar foto")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -54,6 +55,10 @@ def menu():
         elif event == "Login":
             window.hide()
             cadastrar_login()
+            window.un_hide()
+        elif event == "Cadastrar foto":
+            window.hide()
+            cadastrar_imagem(conexao, cursor)
             window.un_hide()
 
     window.close()
@@ -427,7 +432,7 @@ def cadastrar_login():
                 if resultado:
                     sg.popup(f"Login funfo, parabéns {resultado[0]}")
                     window.hide()
-                    tela_user(resultado[0])
+                    tela_user(values['cpf'])
                     window.un_hide()
 
                 else:
@@ -438,7 +443,7 @@ def cadastrar_login():
                 
     window.close()
 
-def tela_user(nome):
+def tela_user(cpf):
 
     conexao = mysql.connector.connect(
                     host="localhost",
@@ -449,21 +454,57 @@ def tela_user(nome):
 
     if conexao.is_connected():
         print("Conectado ao MySQL")
+
     cursor = conexao.cursor()
+    cursor.execute("select nome from pessoa where cpf = " + cpf + ";")
+    nome = cursor.fetchall()
         
-    layout = [[sg.Text(f"Bem vindo {nome}")],
-              [sg.Combo(values=obter_dropdown(cursor), readonly=True, size=(30, 6))],
-              [sg.Button("Salvar"), sg.Button("Voltar")]]
+    layout = [[sg.Text(f"Bem vindo {nome[0][0]}")],
+              [sg.Button("Criar plano")],
+              [sg.Combo(values=obter_dropdown2(cursor,cpf), readonly=True, size=(30, 6)) , sg.Button("Editar plano"),sg.Button("Excluir plano")],
+              [ sg.Button("Voltar")]]
     window = sg.Window("logado", layout)
     
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED or event == "Voltar":
             break
-        elif event == "Salvar":
+        elif event == "Editar plano":
+            
+            pass
+        elif event == "Excluir plano":
+            idPlano = values[0]
+            sql = 'delete from plano where ID = ' + str(idPlano) +';'
+            cursor.execute(sql)
+            conexao.commit();
+            
+        elif event == "Criar plano":
             
             pass
 
     window.close()
+
+def cadastrar_imagem(conexao, cursor):
+    layout = [
+        [sg.Text("Escolha uma imagem para enviar ao banco de dados")],
+        [sg.InputText(key="-FILE-", enable_events=True), sg.FileBrowse("Selecionar", file_types=(("Imagens", "*.png;*.jpg;*.jpeg"),))],
+        [sg.Combo(values=obter_dropdown(cursor), readonly=True, size=(30, 6))],
+        [sg.Button("Enviar"), sg.Button("Sair")]
+    ]
+    janela = sg.Window("Enviar imagem", layout)
+
+    while True:
+        evento, valores = janela.read()
+
+        if evento == sg.WINDOW_CLOSED or evento == "Sair":
+            break
+        elif evento == "Enviar":
+            caminho_imagem = valores["-FILE-"]
+            if caminho_imagem:
+                nome_imagem = caminho_imagem.split("/")[-1]  # Obtém apenas o nome do arquivo
+                salvar_imagem(nome_imagem, caminho_imagem, conexao, cursor)
+            else:
+                sg.popup("Por favor, selecione uma imagem! ⚠")
+    janela.close()
 
 #menu()
