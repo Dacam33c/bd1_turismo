@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import mysql.connector
 from auxiliar import *
+from views import *
 
 # Menu Principal
 def menu(conexao, cursor):
@@ -12,6 +13,7 @@ def menu(conexao, cursor):
               [sg.Button("Cadastrar Transporte")],
               [sg.Button("Login")],
               [sg.Button("Cadastrar foto")],
+              [sg.Button("Ver Clientes-Transportes")],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -59,6 +61,10 @@ def menu(conexao, cursor):
         elif event == "Cadastrar foto":
             window.hide()
             cadastrar_imagem(conexao, cursor)
+            window.un_hide()
+        elif event == "Ver Clientes-Transportes":
+            window.hide()
+            cliente_transporte(cursor)
             window.un_hide()
 
     window.close()
@@ -450,7 +456,7 @@ def tela_user(cpf):
     conexao = mysql.connector.connect(
                     host="localhost",
                     user="root",
-                    password="309320",
+                    password="senha123",
                     database="turismo"
                 )
 
@@ -654,4 +660,30 @@ def criar_plano(cpf):
             
     janela.close()
 
+def cliente_transporte(cursor):
+    colunas, dados = VIEW_cliente_transporte(cursor)
+    layout = [
+        [sg.Text("Tabela de Transportes")],
+        [sg.Table(values=dados, headings=colunas, 
+                auto_size_columns=True,
+                justification="left",
+                num_rows=min(10, len(dados)),  # Limita a exibição a 10 linhas
+                key="-TABELA-")],
+        [sg.Button("Atualizar"), sg.Button("Sair")]
+    ]
+
+    # Criar janela
+    janela = sg.Window("Consulta ao Banco de Dados", layout)
+
+    # Loop da interface
+    while True:
+        evento, valores = janela.read()
+        
+        if evento == sg.WINDOW_CLOSED or evento == "Sair":
+            break
+        elif evento == "Atualizar":
+            colunas, dados = VIEW_cliente_transporte(cursor)
+            janela["-TABELA-"].update(values=dados)
+
+    janela.close()
 #menu()
