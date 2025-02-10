@@ -35,6 +35,9 @@ def insertSql(dicionario,conexao):
         #print(dicionario[key][0])
         #print(sql)
         
+        print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+        print(sql)
+        print(dicionario[key][0])
         cursor.execute(sql, dicionario[key][0])
         conexao.commit()
 '''
@@ -79,3 +82,8 @@ def obter_dropdown2(cursor, cpf):
     cursor.execute(sql, [cpf])
     opcoes = [linha[0] for linha in cursor.fetchall()]
     return opcoes
+
+def get_viagens(destino):
+
+    if(destino == 0):
+        return ['seleciona um destino']

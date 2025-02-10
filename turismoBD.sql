@@ -34,6 +34,7 @@ INSERT INTO Pessoa (CPF, Nome, endereco, dataDeNascimento, telefone) VALUES
 ('23456789012', 'Mariana Santos Oliveira', 'Avenida Brasil, 456, Rio de Janeiro - RJ', '1985-09-23', '(21) 99876-5432'),
 ('34567890123', 'Ricardo Pereira Costa', 'Rua XV de Novembro, 789, Curitiba - PR', '1993-02-15', '(41) 91234-5678'),
 ('45678901234', 'Fernanda Lima Souza', 'Alameda das Rosas, 321, Belo Horizonte - MG', '1988-07-30', '(31) 92345-6789'),
+('1', '1', '1', '1988-07-30', '1'),
 ('56789012345', 'Thiago Mendes Rocha', 'Praça da Liberdade, 987, Porto Alegre - RS', '1995-11-05', '(51) 93456-7890');
 
 CREATE TABLE Destino 
@@ -58,11 +59,11 @@ CREATE TABLE Localizacao (
 );
 
 INSERT INTO Localizacao (endereco, nomeDestino) VALUES
-('Avenida Paulista, 123, São Paulo - SP', 'São Paulo'),
-('Rodovia BR-101, Km 200, Florianópolis - SC', 'Florianópolis'),
-('Rua das Palmeiras, 456, Porto Seguro - BA', 'Porto Seguro'),
-('Rua XV de Novembro, 789, Curitiba - PR', 'Curitiba'),
-('Rua Augusta, 321, São Paulo - SP', 'São Paulo');
+('Avenida Paulista 123 São Paulo - SP', 'Gramado'),
+('Rodovia BR-101 Km 200 Florianópolis - SC', 'Gramado'),
+('Rua das Palmeiras 456 Porto Seguro - BA', 'Gramado'),
+('Rua XV de Novembro 789 Curitiba - PR', 'Curitiba'),
+('Rua Augusta 321 São Paulo - SP', 'São Paulo');
 
 CREATE TABLE Hotel (
     CNPJ VARCHAR(14) PRIMARY KEY,
@@ -72,11 +73,11 @@ CREATE TABLE Hotel (
     FOREIGN KEY (endereco) REFERENCES Localizacao(endereco)
 );
 INSERT INTO Hotel (CNPJ, tipo, nome, endereco) VALUES
-('12345678000101', 'Hotel 5 Estrelas', 'Grand Palace Hotel', 'Avenida Paulista, 123, São Paulo - SP'),
-('23456789000102', 'Resort', 'Paraíso das Águas Resort', 'Rodovia BR-101, Km 200, Florianópolis - SC'),
-('34567890000103', 'Pousada', 'Pousada Recanto do Sol', 'Rua das Palmeiras, 456, Porto Seguro - BA'),
-('45678901000104', 'Hotel Executivo', 'Blue Tower Business Hotel', 'Rua XV de Novembro, 789, Curitiba - PR'),
-('56789012000105', 'Hostel', 'Backpackers Hostel', 'Rua Augusta, 321, São Paulo - SP');
+('12345678000101', 'Hotel 5 Estrelas', 'Grand Palace Hotel', 'Avenida Paulista 123 São Paulo - SP'),
+('23456789000102', 'Resort', 'Paraíso das Águas Resort', 'Rodovia BR-101 Km 200 Florianópolis - SC'),
+('34567890000103', 'Pousada', 'Pousada Recanto do Sol', 'Rua das Palmeiras 456 Porto Seguro - BA'),
+('45678901000104', 'Hotel Executivo', 'Blue Tower Business Hotel', 'Rua XV de Novembro 789 Curitiba - PR'),
+('56789012000105', 'Hostel', 'Backpackers Hostel', 'Rua Augusta 321 São Paulo - SP');
 
 CREATE TABLE pontoTuristico 
 ( 
@@ -132,8 +133,8 @@ CREATE TABLE Viagens
 INSERT INTO Viagens (Preço, DataPartida, placa, hora, nomeDestino,assentosOcupados) VALUES
 (150, '2024-02-10', 'ABC1A23', '08:00', 'Fernando de Noronha','3'),
 (200, '2024-02-15', 'XYZ9B87', '14:30', 'Gramado','5'),
-(120, '2024-02-20', 'LMN3C56', '07:45', 'Ouro Preto','2'),
-(180, '2024-02-25', 'QWE5D67', '16:00', 'São Paulo','1'),
+(120, '2024-02-20', 'LMN3C56', '07:45', 'Gramado','2'),
+(180, '2024-02-25', 'QWE5D67', '16:00', 'Gramado','1'),
 (90, '2024-03-01', 'RTY7E89', '09:15', 'Ilha Bela','5');
 
 
@@ -150,10 +151,11 @@ CREATE TABLE Cliente (
 );
 
 INSERT INTO Cliente (desconto, NomeDeUsuario, CPF,senha) VALUES
-(10, 'joaosilva', '1','1'),
+(10, 'joaosilva', '12345678901','12345'),
 (15, 'mariasantos', '23456789012','23456'),
 (5, 'pedrosouza', '34567890123','34567'),
 (20, 'anacarvalho', '45678901234','45678'),
+(1, '1', '1','1'),
 (8, 'lucasferreira', '56789012345','56789');
 
 
@@ -169,8 +171,8 @@ CREATE TABLE Guia
 INSERT INTO Guia ( CPF, nomeDestino,Preço) VALUES
 ( '12345678901', 'Fernando de Noronha', 200),
 ('23456789012', 'Gramado',150),
-('34567890123', 'Ouro Preto',180),
-('45678901234', 'São Paulo',120),
+('34567890123', 'Gramado',180),
+('45678901234', 'Gramado',120),
 ('56789012345', 'Ilha Bela',170);
 
 
@@ -184,11 +186,11 @@ CREATE TABLE Quarto (
     
 );
 INSERT INTO Quarto (CNPJHotel,numero, preco, capacidade) VALUES
-('12345678000101',101, 250.00, 2),
-('23456789000102',202, 300.50, 4),
-('34567890000103',303, 180.75, 3),
-('45678901000104',404, 400.00, 2),
-('56789012000105',505, 150.25, 1);
+('12345678000101',101, 250, 2),
+('12345678000101',202, 300, 4),
+('12345678000101',303, 180, 3),
+('45678901000104',404, 400, 2),
+('56789012000105',505, 150, 1);
 
 CREATE TABLE Plano
 ( 
