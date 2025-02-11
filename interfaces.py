@@ -473,7 +473,7 @@ def tela_user(cpf):
     conexao = mysql.connector.connect(
                     host="localhost",
                     user="root",
-                    password="senha123",
+                    password="309320",
                     database="turismo"
                 )
 
@@ -486,7 +486,7 @@ def tela_user(cpf):
         
     layout = [[sg.Text(f"Bem vindo {nome[0][0]}")],
               [sg.Button("Criar plano")],
-              [sg.Combo(values=obter_dropdown2(cursor,cpf), readonly=True, size=(30, 6)) , sg.Button("Editar plano"),sg.Button("Excluir plano")],
+              [sg.Combo(values=obter_dropdown2(cursor,cpf), readonly=True, size=(30, 6), key='excluir') , sg.Button("Editar plano"),sg.Button("Excluir plano")],
               [ sg.Button("Voltar")]]
     window = sg.Window("logado", layout)
     
@@ -498,10 +498,14 @@ def tela_user(cpf):
             
             pass
         elif event == "Excluir plano":
-            idPlano = values[0]
+            idPlano = values['excluir']
             sql = 'delete from plano where ID = ' + str(idPlano) +';'
             cursor.execute(sql)
             conexao.commit()
+            
+            window['excluir'].update(values = obter_dropdown2(cursor,cpf))
+
+
             
         elif event == "Criar plano":
             criar_plano(cpf)
