@@ -8,17 +8,13 @@ from PIL import Image
 # Menu Principal
 def menu(conexao, cursor):
     layout = [[sg.Text("Selecione o que deseja fazer")],
-              [sg.Button("Cadastrar guia"), sg.Button("Cadastrar Cliente")],
-              [sg.Button("Cadastrar Destino"),sg.Button("Cadastrar Localização")],
-              [sg.Button("Cadastrar Hotel"),sg.Button("Cadastrar Quarto")],
-              [sg.Button("Cadastrar Ponto Turístico")],
-              [sg.Button("Cadastrar Transporte")],
-              [sg.Button("Login")],
-              [sg.Button("Cadastrar foto")],
-              [sg.Button("Ver Clientes-Transportes")],
-              [sg.Button("Ver Planos-Pontos turísticos")],
-              [sg.Button("Ver Clientes-Hoteis")],
-              [sg.Button("Ver Foto")],
+              [sg.Button("Cadastrar guia", size=(22,3)), sg.Button("Cadastrar Cliente", size=(22,3))],
+              [sg.Button("Cadastrar Destino", size=(22,3)),sg.Button("Cadastrar Localização", size=(22,3))],
+              [sg.Button("Cadastrar Hotel", size=(22,3)),sg.Button("Cadastrar Quarto", size=(22,3))],
+              [sg.Button("Cadastrar Ponto Turístico", size=(22,3)), sg.Button("Cadastrar Transporte", size=(22,3))],
+              [sg.Button("Cadastrar foto", size=(22,3)), sg.Button("Login", size=(22,3))],
+              [sg.Button("Ver Clientes-Transportes", size=(22,3)), sg.Button("Ver Planos-Pontos turísticos", size=(22,3))],
+              [sg.Button("Ver Clientes-Hoteis", size=(22,3)), sg.Button("Ver Foto", size=(22,3))],
               [sg.Button("Sair")]]
 
     window = sg.Window("BD", layout)
@@ -409,7 +405,7 @@ def cadastrar_login():
     layout = [[sg.Text("Login")],
               [sg.Text("CPF", size=(10,1)), sg.InputText(key='cpf', size=(20,1))],
               [sg.Text("Senha", size=(10,1)), sg.InputText(key='senha', size=(20,1))],
-              [sg.Button("Salvar"), sg.Button("Voltar")]]
+              [sg.Button("Acessar"), sg.Button("Voltar")]]
     window = sg.Window("Login", layout)
     
     while True:
@@ -417,8 +413,17 @@ def cadastrar_login():
 
         if event == sg.WIN_CLOSED or event == "Voltar":
             break
-        elif event == "Salvar":
+        elif event == "Acessar":
             try:
+
+                cpfCliente = values['cpf']
+                senhaCliente = values['senha']
+
+                # Verificar se os campos foram preenchidos
+                if not cpfCliente or not senhaCliente:
+                    sg.popup("Por favor, insira CPF e senha!")
+                    continue
+
                 # Conectar ao banco de dados
                 conexao = mysql.connector.connect(
                     host="localhost",
@@ -429,14 +434,6 @@ def cadastrar_login():
 
                 if conexao.is_connected():
                     print("Conectado ao MySQL")
-
-                cpfCliente = values['cpf']
-                senhaCliente = values['senha']
-
-                # Verificar se os campos foram preenchidos
-                if not cpfCliente or not senhaCliente:
-                    sg.popup("Por favor, insira CPF e senha!")
-                    continue
 
                 # Query para verificar CPF e Senha
                 sql = """
@@ -455,13 +452,13 @@ def cadastrar_login():
                     conexao.close()
 
                 if resultado:
-                    sg.popup(f"Login funfo, parabéns {resultado[0]}")
+                    sg.popup(f"Login efetuado com sucesso, {resultado[0]}")
                     window.hide()
                     tela_user(values['cpf'])
                     window.un_hide()
 
                 else:
-                    sg.popup("Pode não man")
+                    sg.popup("Falha ao realizar login")
 
             except mysql.connector.Error as err:
                 sg.popup_error(f"Erro ao conectar ao MySQL: {err}")
@@ -812,7 +809,8 @@ def VerImagem(cursor):
         [sg.Combo(pontos_turisticos, key="-PONTO-", readonly=True, size=(30, 6))],
         [sg.Button("Consultar")],
         [sg.Image(key="-IMAGEM-")],  # Espaço reservado para a imagem
-        [sg.Text("", key="-MSG-", text_color="red")]
+        [sg.Text("", key="-MSG-", text_color="red")],
+        [sg.Button("Voltar")]
     ]
 
     janela = sg.Window("Visualizador de Imagens", layout)
@@ -821,7 +819,7 @@ def VerImagem(cursor):
     while True:
         evento, valores = janela.read()
         
-        if evento == sg.WINDOW_CLOSED:
+        if evento == sg.WINDOW_CLOSED or evento == "Voltar":
             break
         elif evento == "Consultar":
             ponto_selecionado = valores["-PONTO-"]
