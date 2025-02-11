@@ -455,13 +455,13 @@ def cadastrar_login():
                     conexao.close()
 
                 if resultado:
-                    sg.popup(f"Login funfo, parabéns {resultado[0]}")
+                    sg.popup(f"Login efetuado: {resultado[0]}")
                     window.hide()
                     tela_user(values['cpf'])
                     window.un_hide()
 
                 else:
-                    sg.popup("Pode não man")
+                    sg.popup("Erro ao fazer Login")
 
             except mysql.connector.Error as err:
                 sg.popup_error(f"Erro ao conectar ao MySQL: {err}")

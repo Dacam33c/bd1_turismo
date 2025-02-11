@@ -20,6 +20,10 @@ DROP TABLE IF EXISTS Viagens;
 DROP TABLE IF EXISTS aviao;
 DROP TABLE IF EXISTS localdepartida;
 DROP TABLE IF EXISTS onibus;
+DROP PROCEDURE IF EXISTS DeletarCliente;
+DROP PROCEDURE IF EXISTS DeletarLocalizacao;
+DROP PROCEDURE IF EXISTS GetImagemPonto;
+DROP PROCEDURE IF EXISTS AnalisarCapacidadeTransporte;
 
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -256,3 +260,67 @@ FROM Plano p
 JOIN Viagens v ON p.IDviagem = v.ID
 JOIN Destino d ON v.NomeDestino = d.Nome
 JOIN pontoTuristico pt ON d.Nome = pt.nomeDestino;
+
+-- PROCEDURES
+DELIMITER $$
+CREATE PROCEDURE GetImagemPonto(IN p_nome VARCHAR(255))
+BEGIN
+    SELECT foto
+    FROM pontoFoto
+    WHERE Nome = p_nome;
+END $$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE AnalisarCapacidadeTransporte(IN p_placa VARCHAR(100))
+BEGIN
+    DECLARE v_capacidade INT;
+    DECLARE v_assentos_ocupados INT;
+    DECLARE v_ocupacao DECIMAL(5,2);
+    DECLARE v_desconto INT;
+    DECLARE v_mensagem VARCHAR(255);
+    
+    SELECT t.capacidade, COALESCE(v.assentosOcupados, 0)
+    INTO v_capacidade, v_assentos_ocupados
+    FROM transporte t
+    LEFT JOIN Viagens v ON t.PlacaTransporte = v.placa
+    WHERE t.PlacaTransporte = p_placa
+    LIMIT 1;
+
+    IF v_capacidade > 0 THEN
+        SET v_ocupacao = (v_assentos_ocupados / v_capacidade) * 100;
+    ELSE
+        SET v_ocupacao = 0;
+    END IF;
+
+    IF v_assentos_ocupados >= v_capacidade THEN
+        SET v_desconto = 0;
+        SET v_mensagem = 'Sem assentos disponíveis';
+    ELSEIF v_ocupacao < 50 THEN
+        SET v_desconto = 20;
+        SET v_mensagem = 'Desconto de 20% aplicado';
+    ELSEIF v_ocupacao < 75 THEN
+        SET v_desconto = 10;
+        SET v_mensagem = 'Desconto de 10% aplicado';
+    ELSE
+        SET v_desconto = 0;
+        SET v_mensagem = 'Sem desconto aplicado';
+    END IF;
+
+    SELECT p_placa AS Placa, v_capacidade AS Capacidade, v_assentos_ocupados AS Passageiros,
+           v_ocupacao AS `Ocupação (%)`, v_desconto AS `Desconto (%)`, v_mensagem AS Mensagem;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE DeletarCliente(IN c_cpf VARCHAR(11))
+BEGIN
+    DELETE FROM Pessoa WHERE CPF = c_cpf;
+    DELETE FROM Cliente WHERE CPF = c_cpf;
+END $$
+
+DELIMITER ;
