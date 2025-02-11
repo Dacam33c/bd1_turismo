@@ -661,15 +661,29 @@ def criar_plano(cpf,id):
             janela["preçoQuarto"].update(preço_quarto[0])
         
         elif evento == 'Confirmar Guia':
-            idGuia = valores['guia'][0]
+            idGuia = valores['guia']
 
-            sql = "select preço from guia where id = '" + str(idGuia) + "';"
+            if len(idGuia) >= 1:
+
+                idGuia = str(valores['guia'][0])
+            
+            else:
+
+                idGuia = 'null'
+
+            sql = "select preço from guia where id = '" + idGuia + "';"
             cursor.execute(sql)
             fetch = cursor.fetchall()
-            preço_guia = [linha[0] for linha in fetch]
 
-            janela["preçoGuia"].update(preço_guia[0])
+            if idGuia != 'null':
 
+                preço_guia = [linha[0] for linha in fetch]
+                janela["preçoGuia"].update(preço_guia[0])
+            
+            else:
+
+                preço_guia = 0
+                janela["preçoGuia"].update(preço_guia)
 
             total = float(janela["preçoGuia"].get()) + float(janela["preçoQuarto"].get()) + float(janela['pr'].get())
             janela['total'].update(total)
@@ -688,31 +702,38 @@ def criar_plano(cpf,id):
 
             cursor = conexao.cursor()
 
-            sql = "select CPF from guia where id = '" + str(idGuia) + "';"
+            #sql = "select ID from guia where id = '" + str(idGuia) + "';"
+
             cursor.execute(sql)
             fetch = cursor.fetchall()
             cpfguia = [linha[0] for linha in fetch]
 
-            print(cpfguia)
+            print(idguia)
             print(hotelcnpj)
             print(valores['quarto'])
             print(valores['-Combo-'][0])
 
-            Plano = {'Plano' : [ ( cpf, cpfguia[0], hotelcnpj[0], valores['quarto'], valores['-Combo-'][0] )] }
+            if idguia:
+
+                Plano = {'Plano' : [ ( cpf, idguia, hotelcnpj[0], valores['quarto'], valores['-Combo-'][0] )] }
+
+            else:
+
+                Plano = {'Plano' : [ ( cpf, 'null', hotelcnpj[0], valores['quarto'], valores['-Combo-'][0] )] }
 
             if(id != 0):
-                sql = "UPDATE Plano SET CPFcliente = '" + cpf + "', CPFguia = '" + cpfguia[0] + "', CNPJHotel = '" + hotelcnpj[0] + "', numeroQuarto = "+ str(valores['quarto']) + ", IDviagem = '"+ str(valores['-Combo-'][0]) +"' WHERE ID = '"+ str(id) +"';"
-                print(sql)
-                cursor = conexao.cursor()
-                cursor.execute(sql)
-                conexao.commit()
-                sg.popup("Plano Atualizado!")
+                    sql = "UPDATE Plano SET CPFcliente = '" + cpf + "', CPFguia = '" + idguia[0] + "', CNPJHotel = '" + hotelcnpj[0] + "', numeroQuarto = "+ str(valores['quarto']) + ", IDviagem = '"+ str(valores['-Combo-'][0]) +"' WHERE ID = '"+ str(id) +"';"
+                    print(sql)
+                    cursor = conexao.cursor()
+                    cursor.execute(sql)
+                    conexao.commit()
+                    sg.popup("Plano Atualizado!")
 
             else:
                 insertSql(Plano,conexao)
                 sg.popup("Plano cadastrado!")
 
-            conexao.close()      
+            conexao.close() 
             
     janela.close()
 
