@@ -144,10 +144,6 @@ INSERT INTO Viagens (Preço, DataPartida, placa, hora, nomeDestino,assentosOcupa
 (90, '2024-03-01', 'RTY7E89', '09:15', 'Ilha Bela','5');
 
 
-
-
-
-
 CREATE TABLE Cliente (
     CPF VARCHAR(11) PRIMARY KEY,
     NomeDeUsuario VARCHAR(100),
@@ -203,8 +199,8 @@ CREATE TABLE Plano
  ID INT AUTO_INCREMENT PRIMARY KEY,  
  CPFcliente varchar(11),
  FOREIGN KEY(CPFcliente) REFERENCES Cliente (CPF),
- CPFguia varchar(11),
- FOREIGN KEY(CPFguia) REFERENCES Guia (CPF),
+ IDguia INT,
+ FOREIGN KEY(IDguia) REFERENCES Guia (ID),
  CNPJHotel varchar(14),
  numeroQuarto int(10),
  FOREIGN KEY(numeroQuarto,CNPJHotel) REFERENCES quarto (numero, CNPJHotel),
@@ -213,12 +209,12 @@ CREATE TABLE Plano
 );
 
 
-INSERT INTO Plano (CPFcliente, CPFguia, CNPJHotel, numeroQuarto, IDviagem) VALUES
-('12345678901', '23456789012',  '12345678000101', '101', '1'),
-('23456789012', '23456789012',  '23456789000102', '202', '2'),
-('34567890123', '34567890123',  '34567890000103', '303', '3'),
-('45678901234', '45678901234',  '45678901000104', '404', '4'),
-('45678901234', '56789012345',  '56789012000105', '505', '5');
+INSERT INTO Plano (CPFcliente, IDguia, CNPJHotel, numeroQuarto, IDviagem) VALUES
+('12345678901', 1,  '12345678000101', '101', '1'),
+('23456789012', 2,  '23456789000102', '202', '2'),
+('34567890123', 3,  '34567890000103', '303', '3'),
+('45678901234', 3,  '45678901000104', '404', '4'),
+('45678901234', 2,  '56789012000105', '505', '5');
 
 -- VIEWS
 CREATE VIEW cliente_transporte AS
